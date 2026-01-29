@@ -2,85 +2,137 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تطبيق الذاكرين V2.0 - إصلاح الأيقونات</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>تطبيق الذاكرين 2026 - النسخة الاحترافية</title>
     <style>
-        :root { --gold: #ffcf40; --glass: rgba(15, 15, 15, 0.95); --red: #ff3131; }
+        :root { 
+            --gold: #ffcf40; 
+            --glass: rgba(25, 25, 25, 0.9); 
+            --red: #ff3131;
+            --nav-h: 75px; /* ارتفاع ثابت للملاحة */
+        }
+
         * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
         
         body {
-            background: url('https://images.unsplash.com/photo-1441974231531-c6227db76b6e?q=80&w=2000') center/cover no-repeat fixed;
-            color: #fff; font-family: 'Segoe UI', Tahoma, sans-serif; height: 100vh; overflow: hidden;
+            background: #121212 url('https://images.unsplash.com/photo-1441974231531-c6227db76b6e?q=80&w=2000') center/cover no-repeat fixed;
+            color: #fff; font-family: 'Segoe UI', system-ui, sans-serif; height: 100vh; overflow: hidden;
         }
 
-        /* شريط التنبيه العلوي المتوهج */
+        /* شريط التنبيه العلوي المتناسق */
         .neon-bar {
-            background: var(--red); color: white; text-align: center; padding: 10px;
-            font-size: 0.8rem; font-weight: bold; box-shadow: 0 0 15px var(--red);
-            z-index: 10000; position: fixed; top: 0; width: 100%; border-bottom: 2px solid white;
+            background: var(--red); color: white; text-align: center; 
+            padding: 8px 5px; font-size: 0.75rem; font-weight: bold; 
+            position: fixed; top: 0; width: 100%; z-index: 10000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+            border-bottom: 1px solid rgba(255,255,255,0.3);
         }
 
-        .overlay { background: rgba(0, 0, 0, 0.7); height: 100vh; display: flex; flex-direction: column; padding-top: 50px; backdrop-filter: blur(12px); }
-        .content { flex: 1; overflow-y: auto; padding: 20px 15px 180px 15px; }
+        .overlay { 
+            background: rgba(0, 0, 0, 0.75); 
+            height: 100vh; display: flex; flex-direction: column; 
+            padding-top: 40px; backdrop-filter: blur(8px); 
+        }
+
+        .content { 
+            flex: 1; overflow-y: auto; 
+            padding: 15px 15px calc(var(--nav-h) + 20px) 15px; 
+        }
         
+        /* الكروت الزجاجية بمقاسات مرنة */
         .glass-card {
-            background: var(--glass); border-radius: 20px; padding: 20px; margin-bottom: 20px;
-            border: 1px solid rgba(255, 207, 64, 0.3); text-align: center;
+            background: var(--glass); border-radius: 18px; 
+            padding: 15px; margin-bottom: 15px;
+            border: 1px solid rgba(255, 207, 64, 0.2);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
 
-        .clock { font-size: 3rem; color: var(--gold); font-weight: bold; margin: 10px 0; }
-        .prayer-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px; }
-        .p-item span { display: block; font-size: 0.6rem; color: var(--gold); }
-        .p-item b { font-size: 0.7rem; }
+        .clock { 
+            font-size: clamp(2.5rem, 10vw, 3.5rem); 
+            color: var(--gold); font-weight: bold; 
+            margin: 5px 0; font-variant-numeric: tabular-nums;
+        }
 
-        .section-title { color: var(--gold); border-right: 4px solid var(--gold); padding-right: 12px; margin: 30px 0 15px; font-size: 1.1rem; text-align: right; }
+        /* مواقيت الصلاة بتوزيع متساوٍ */
+        .prayer-grid { 
+            display: grid; grid-template-columns: repeat(5, 1fr); 
+            gap: 5px; margin-top: 15px; padding-top: 12px;
+            border-top: 1px solid rgba(255,255,255,0.1); 
+        }
+        .p-item span { display: block; font-size: 0.6rem; color: var(--gold); margin-bottom: 4px; }
+        .p-item b { font-size: 0.7rem; letter-spacing: -0.5px; }
 
-        /* تعديل الأسطر لتظهر الأيقونة كاملة */
+        .section-title { 
+            color: var(--gold); border-right: 3px solid var(--gold); 
+            padding-right: 10px; margin: 20px 0 12px; 
+            font-size: 1.1rem; text-align: right; 
+        }
+
+        /* صفوف القوائم بمقاسات محسنة */
         .item-row {
-            background: rgba(255, 255, 255, 0.08); margin-bottom: 12px; padding: 15px 20px;
-            border-radius: 50px; display: flex; align-items: center; justify-content: space-between;
-            cursor: pointer; border: 1px solid rgba(255,255,255,0.05); min-height: 60px;
+            background: rgba(255, 255, 255, 0.06); 
+            margin-bottom: 10px; padding: 12px 18px;
+            border-radius: 12px; display: flex; align-items: center; 
+            justify-content: space-between; border: 1px solid rgba(255,255,255,0.03);
+            min-height: 55px;
         }
-        .item-row i { color: var(--gold); font-size: 1.2rem; display: flex; align-items: center; justify-content: center; width: 30px; }
-        .item-row b { flex: 1; text-align: right; margin-right: 15px; font-size: 0.95rem; line-height: 1.2; }
+        .item-row b { 
+            flex: 1; text-align: right; margin-right: 12px; 
+            font-size: 0.9rem; font-weight: 500; color: #eee;
+        }
 
-        /* شريط التنقل السفلي - إصلاح النص والأيقونة */
+        /* شريط التنقل السفلي الاحترافي */
         .nav-bar {
-            position: fixed; bottom: 0; width: 100%; height: 85px;
-            background: #000; display: flex; justify-content: space-around; 
-            align-items: center; border-top: 1.5px solid var(--gold); z-index: 9999;
+            position: fixed; bottom: 0; width: 100%; height: var(--nav-h);
+            background: rgba(10, 10, 10, 0.98); display: flex; 
+            justify-content: space-around; align-items: center; 
+            border-top: 1px solid var(--gold); z-index: 9999;
+            padding-bottom: env(safe-area-inset-bottom);
         }
-        .nav-link { color: #888; text-align: center; flex: 1; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .nav-link.active { color: var(--gold); }
-        .nav-link i { font-size: 1.4rem; margin-bottom: 5px; height: 25px; display: block; }
-        .nav-link span { font-size: 0.7rem; font-weight: bold; display: block; }
+        .nav-link { 
+            color: #777; text-align: center; flex: 1; 
+            cursor: pointer; display: flex; flex-direction: column; 
+            align-items: center; justify-content: center;
+            height: 100%; transition: 0.2s;
+        }
+        .nav-link.active { color: var(--gold); background: rgba(255, 207, 64, 0.05); }
+        .nav-link span { font-size: 0.7rem; margin-top: 4px; font-weight: 600; }
 
-        /* مشغل الصوت */
+        .icon-svg { width: 22px; height: 22px; fill: currentColor; transition: 0.2s; }
+
+        /* مشغل الصوت العائم */
         .player-bar {
-            position: fixed; bottom: 95px; left: 15px; right: 15px;
-            background: var(--gold); color: #000; border-radius: 50px;
-            padding: 12px 20px; display: none; align-items: center; justify-content: space-between;
-            z-index: 5000;
+            position: fixed; bottom: calc(var(--nav-h) + 10px); 
+            left: 10px; right: 10px;
+            background: var(--gold); color: #000; border-radius: 12px;
+            padding: 10px 15px; display: none; align-items: center; 
+            justify-content: space-between; z-index: 5000;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.4);
         }
 
-        .event-line { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.95rem; }
+        .event-line { 
+            display: flex; justify-content: space-between; 
+            padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.05); 
+            font-size: 0.85rem;
+        }
     </style>
 </head>
 <body>
 
-<div class="neon-bar">⚠️ التطبيق غير مكتمل - هذه نسخة تجريبية فقط ⚠️</div>
+<div class="neon-bar">⚠️ نسخة تجريبية - التطبيق قيد التطوير</div>
 
 <div class="overlay">
     <div class="player-bar" id="pBar">
-        <marquee style="width:70%; font-weight:bold" id="trackName">جاري التحميل...</marquee>
-        <i class="fa-solid fa-circle-pause" id="pBtn" onclick="togglePlay()" style="font-size:2rem;"></i>
+        <marquee style="width:75%; font-size: 0.85rem; font-weight: bold;" id="trackName">جاري التحميل...</marquee>
+        <div onclick="togglePlay()" style="cursor:pointer; display:flex;">
+            <svg class="icon-svg" style="fill:#000; width:28px; height:28px;" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/></svg>
+        </div>
     </div>
 
     <div class="content">
         <div id="home-sec" class="page active">
             <div class="glass-card">
-                <small style="color:var(--gold)">Casablanca, Morocco</small>
+                <small style="color:var(--gold); font-size: 0.7rem;">CASABLANCA, MOROCCO</small>
                 <div class="clock" id="timer">00:00:00</div>
                 <div class="prayer-grid">
                     <div class="p-item"><span>Fajr</span><b id="f">--:--</b></div>
@@ -91,27 +143,27 @@
                 </div>
             </div>
             
-            <div class="glass-card" onclick="tasbih()" style="border: 2px solid var(--gold);">
-                <p>عداد التسبيح</p>
-                <h1 id="count" style="font-size:4rem; color:var(--gold)">0</h1>
-                <small><i class="fa-solid fa-hand-pointer"></i> اضغط هنا</small>
+            <div class="glass-card" onclick="tasbih()" style="border: 1.5px solid var(--gold); padding: 25px 15px;">
+                <p style="font-size: 0.9rem; opacity: 0.8;">السبحة الإلكترونية</p>
+                <h1 id="count" style="font-size:3.5rem; color:var(--gold); margin: 5px 0;">0</h1>
+                <small style="font-size: 0.7rem;">انقر في أي مكان داخل الكرت</small>
             </div>
         </div>
 
         <div id="quran-sec" class="page" style="display:none">
-            <div class="section-title">القرآن الكريم</div>
+            <div class="section-title">السور القرآنية</div>
             <div id="qList"></div>
         </div>
 
         <div id="dua-sec" class="page" style="display:none">
-            <div class="section-title">أذكار وأحاديث</div>
+            <div class="section-title">أذكار مختارة</div>
             <div id="azkarList"></div>
             <div class="section-title">أحاديث نبوية</div>
             <div id="hadithList"></div>
         </div>
 
         <div id="event-sec" class="page" style="display:none">
-            <div class="section-title">مواعيد 2026</div>
+            <div class="section-title">مواعيد عام 2026</div>
             <div class="glass-card">
                 <div class="event-line"><span>🌙 بداية رمضان</span><b>18 فبراير</b></div>
                 <div class="event-line"><span>⭐ عيد الفطر</span><b>20 مارس</b></div>
@@ -123,41 +175,49 @@
 
     <nav class="nav-bar">
         <div class="nav-link active" onclick="nav('home-sec', this)">
-            <i class="fa-solid fa-house"></i><span>الرئيسية</span>
+            <svg class="icon-svg" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+            <span>الرئيسية</span>
         </div>
         <div class="nav-link" onclick="nav('quran-sec', this)">
-            <i class="fa-solid fa-book-open"></i><span>القرآن</span>
+            <svg class="icon-svg" viewBox="0 0 24 24"><path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zM3.89 9L12 4.58 20.11 9 12 13.42 3.89 9z"/></svg>
+            <span>القرآن</span>
         </div>
         <div class="nav-link" onclick="nav('dua-sec', this)">
-            <i class="fa-solid fa-heart"></i><span>الأذكار</span>
+            <svg class="icon-svg" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+            <span>الأذكار</span>
         </div>
         <div class="nav-link" onclick="nav('event-sec', this)">
-            <i class="fa-solid fa-calendar"></i><span>المناسبات</span>
+            <svg class="icon-svg" viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10z"/></svg>
+            <span>الأعياد</span>
         </div>
     </nav>
 </div>
 
 <script>
     const audio = new Audio();
+    
     const surahs = [
-        {id:"001", n:"الفاتحة"}, {id:"018", n:"الكهف"}, {id:"036", n:"يس"},
+        {id:"001", n:"الفاتحة"}, {id:"018", n:"الكهف"}, {id:"036", n:"يس"}, 
         {id:"055", n:"الرحمن"}, {id:"067", n:"الملك"}, {id:"112", n:"الإخلاص"},
         {id:"113", n:"الفلق"}, {id:"114", n:"الناس"}
     ];
     
-    const azkar = ["أصبحنا وأصبح الملك لله", "رضيت بالله رباً وبالإسلام ديناً", "يا حي يا قيوم برحمتك أستغيث"];
-    const hadiths = ["خيركم من تعلم القرآن وعلمه", "إنما الأعمال بالنيات", "اتق الله حيثما كنت"];
+    const azkar = ["أصبحنا وأصبح الملك لله", "يا حي يا قيوم برحمتك أستغيث", "سبحان الله وبحمده"];
+    const hadiths = ["خيركم من تعلم القرآن وعلمه", "إنما الأعمال بالنيات"];
 
-    const qDiv = document.getElementById('qList');
+    const qL = document.getElementById('qList');
     surahs.forEach(s => {
-        qDiv.innerHTML += `<div class="item-row" onclick="playAudio('${s.id}', '${s.n}')"><i class="fa-solid fa-play"></i><b>سورة ${s.n}</b><i class="fa-solid fa-music"></i></div>`;
+        qL.innerHTML += `<div class="item-row" onclick="playAudio('${s.id}', '${s.n}')">
+            <svg class="icon-svg" style="width:18px;" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+            <b>سورة ${s.n}</b>
+        </div>`;
     });
 
-    const azDiv = document.getElementById('azkarList');
-    azkar.forEach(a => { azDiv.innerHTML += `<div class="item-row"><i class="fa-solid fa-sun"></i><b>${a}</b></div>`; });
+    const azL = document.getElementById('azkarList');
+    azkar.forEach(a => { azL.innerHTML += `<div class="item-row"><b>${a}</b></div>`; });
 
-    const hDiv = document.getElementById('hadithList');
-    hadiths.forEach(h => { hDiv.innerHTML += `<div class="item-row"><i class="fa-solid fa-comment"></i><b>${h}</b></div>`; });
+    const hL = document.getElementById('hadithList');
+    hadiths.forEach(h => { hL.innerHTML += `<div class="item-row"><b>${h}</b></div>`; });
 
     function playAudio(id, name) {
         audio.src = `https://server8.mp3quran.net/ahmad_huth/${id}.mp3`;
@@ -168,12 +228,11 @@
     }
 
     function togglePlay() {
-        if(audio.paused) { audio.play(); document.getElementById('pBtn').className="fa-solid fa-circle-pause"; }
-        else { audio.pause(); document.getElementById('pBtn').className="fa-solid fa-circle-play"; }
+        if(audio.paused) audio.play(); else audio.pause();
     }
 
     let c = 0;
-    function tasbih() { c++; document.getElementById('count').innerText = c; }
+    function tasbih() { c++; document.getElementById('count').innerText = c; if(navigator.vibrate) navigator.vibrate(30); }
 
     function nav(id, el) {
         document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
@@ -189,8 +248,8 @@
     async function getP() {
         try {
             const r = await fetch('https://api.aladhan.com/v1/timingsByCity?city=Casablanca&country=Morocco&method=3');
-            const data = await r.json();
-            const t = data.data.timings;
+            const d = await r.json();
+            const t = d.data.timings;
             document.getElementById('f').innerText = t.Fajr;
             document.getElementById('d').innerText = t.Dhuhr;
             document.getElementById('a').innerText = t.Asr;
