@@ -3,63 +3,83 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تطبيق الذاكرين المطور 2026</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>نسخة تجريبية - الذاكرين</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        :root { --gold: #ffcf40; --glass: rgba(20, 20, 20, 0.85); }
+        :root { --gold: #ffcf40; --glass: rgba(20, 20, 20, 0.88); }
         * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        
         body {
             background: url('https://images.unsplash.com/photo-1441974231531-c6227db76b6e?q=80&w=2000') center/cover no-repeat fixed;
             color: #fff; font-family: 'Segoe UI', sans-serif; height: 100vh; overflow: hidden;
         }
+
+        /* شريط التنبيه المتوهج في الأعلى */
+        .warning-bar {
+            background: rgba(255, 0, 0, 0.6);
+            color: white;
+            text-align: center;
+            padding: 8px 0;
+            font-size: 0.9rem;
+            font-weight: bold;
+            box-shadow: 0 0 15px rgba(255, 0, 0, 0.8);
+            border-bottom: 1px solid red;
+            z-index: 3000;
+            position: relative;
+        }
+
         .overlay { background: rgba(0, 0, 0, 0.6); height: 100vh; display: flex; flex-direction: column; backdrop-filter: blur(12px); }
-        .content { flex: 1; overflow-y: auto; padding: 20px 15px 160px 15px; }
+        .content { flex: 1; overflow-y: auto; padding: 15px 15px 160px 15px; }
         
         .glass-card {
             background: var(--glass); border-radius: 25px; padding: 20px; margin-bottom: 20px;
             border: 1px solid rgba(255, 207, 64, 0.2); text-align: center; backdrop-filter: blur(15px);
-            box-shadow: 0 8px 32px rgba(0,0,0,0.5);
         }
-        .clock { font-size: 3.5rem; color: var(--gold); font-weight: bold; margin: 10px 0; }
+
+        .clock { font-size: 3.2rem; color: var(--gold); font-weight: bold; margin: 10px 0; letter-spacing: 2px; }
         
         .prayer-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px; }
-        .p-item span { display: block; font-size: 0.7rem; color: var(--gold); }
-        .p-item b { font-size: 0.85rem; }
+        .p-item span { display: block; font-size: 0.65rem; color: var(--gold); margin-bottom: 4px; }
+        .p-item b { font-size: 0.8rem; }
 
-        .section-head { color: var(--gold); text-align: center; margin: 25px 0 15px; font-size: 1.2rem; }
-        
         .item-row {
-            background: rgba(255, 255, 255, 0.07); margin-bottom: 12px; padding: 18px 25px;
+            background: rgba(255, 255, 255, 0.08); margin-bottom: 12px; padding: 18px 22px;
             border-radius: 50px; display: flex; align-items: center; justify-content: space-between;
             cursor: pointer; border: 1px solid rgba(255,255,255,0.05); transition: 0.3s;
         }
-        .item-row:active { background: rgba(255, 207, 64, 0.2); transform: scale(0.97); }
-        .item-row i { color: var(--gold); font-size: 1.2rem; }
-
-        .player-bar {
-            position: fixed; bottom: 100px; left: 15px; right: 15px;
-            background: var(--gold); color: #000; border-radius: 50px;
-            padding: 12px 25px; display: none; align-items: center; justify-content: space-between;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5); z-index: 2000;
-        }
+        .item-row b { flex: 1; text-align: right; margin: 0 15px; font-size: 1rem; }
+        .item-row i { color: var(--gold); font-size: 1.3rem; min-width: 25px; text-align: center; }
 
         .nav-bar {
             position: fixed; bottom: 0; width: 100%; height: 85px;
-            background: rgba(5, 5, 5, 0.95); display: flex;
+            background: rgba(5, 5, 5, 0.98); display: flex;
             justify-content: space-around; align-items: center; border-top: 1px solid var(--gold);
         }
-        .nav-link { color: #777; text-align: center; flex: 1; cursor: pointer; }
+        .nav-link { color: #666; text-align: center; flex: 1; cursor: pointer; display: flex; flex-direction: column; align-items: center; }
         .nav-link.active { color: var(--gold); }
-        .nav-link i { font-size: 1.6rem; display: block; margin-bottom: 4px; }
+        .nav-link i { font-size: 1.6rem; margin-bottom: 5px; }
+        .nav-link span { font-size: 0.75rem; font-weight: bold; }
+
+        .player-bar {
+            position: fixed; bottom: 95px; left: 15px; right: 15px;
+            background: var(--gold); color: #000; border-radius: 50px;
+            padding: 12px 20px; display: none; align-items: center; justify-content: space-between;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5); z-index: 2000;
+        }
 
         .event-line { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
     </style>
 </head>
 <body>
+
 <div class="overlay">
+    <div class="warning-bar">
+        ⚠️ التطبيق غير مكتمل هذه فقط نسخة تجريبية
+    </div>
+
     <div class="player-bar" id="pBar">
-        <marquee style="width:75%; font-weight:bold" id="trackName">جاري التحميل...</marquee>
-        <i class="fa-solid fa-circle-pause" id="pBtn" onclick="togglePlay()" style="font-size:2.2rem;"></i>
+        <marquee style="width:70%; font-weight:bold" id="trackName">جاري التحميل...</marquee>
+        <i class="fa-solid fa-circle-pause" id="pBtn" onclick="togglePlay()" style="font-size:2rem; cursor:pointer;"></i>
     </div>
 
     <div class="content">
@@ -78,67 +98,83 @@
             
             <div class="glass-card" onclick="tasbih()" style="border: 2px solid var(--gold); background: rgba(255,207,64,0.1);">
                 <p>عداد التسبيح</p>
-                <h2 id="count" style="font-size:4rem; margin:10px 0;">0</h2>
-                <button onclick="event.stopPropagation(); resetCount()" style="background:none; border:1px solid #fff; color:#fff; padding:4px 12px; border-radius:8px; font-size:12px;">تصفير</button>
+                <h2 id="count" style="font-size:4.2rem; margin:10px 0;">0</h2>
+                <button onclick="event.stopPropagation(); resetCount()" style="background:none; border:1px solid #fff; color:#fff; padding:6px 15px; border-radius:12px; font-size:12px;">تصفير</button>
             </div>
 
             <div class="glass-card">
-                <h3 style="color:var(--gold); margin-bottom:15px;">مواعيد رمضان والأعياد 2026</h3>
-                <div class="event-line"><span>🌙 بداية شهر رمضان</span><b>18 فبراير</b></div>
-                <div class="event-line"><span>⭐ عيد الفطر المبارك</span><b>20 مارس</b></div>
-                <div class="event-line"><span>🕋 عيد الأضحى المبارك</span><b>27 مايو</b></div>
+                <h3 style="color:var(--gold); margin-bottom:15px;">مواعيد 2026</h3>
+                <div class="event-line"><span>🌙 بداية رمضان</span><b>18 فبراير</b></div>
+                <div class="event-line"><span>⭐ عيد الفطر</span><b>20 مارس</b></div>
+                <div class="event-line"><span>🕋 عيد الأضحى</span><b>27 مايو</b></div>
             </div>
         </div>
 
         <div id="quran-sec" class="page" style="display:none">
-            <h3 class="section-head">المصحف الصوتي (تشغيل مباشر)</h3>
+            <h3 style="text-align:center; color:var(--gold); margin-bottom:20px;">المصحف الصوتي المباشر</h3>
             <div id="qList"></div>
         </div>
 
         <div id="dua-sec" class="page" style="display:none">
-            <h3 class="section-head">الأذكار والأدعية</h3>
+            <h3 style="text-align:center; color:var(--gold); margin-bottom:20px;">الأذكار اليومية</h3>
             <div id="dList"></div>
         </div>
     </div>
 
     <nav class="nav-bar">
-        <div class="nav-link" onclick="nav('home-sec', this)"><i class="fa-solid fa-calendar-alt"></i><span>المناسبات</span></div>
-        <div class="nav-link active" onclick="nav('quran-sec', this)"><i class="fa-solid fa-book-open"></i><span>القرآن</span></div>
-        <div class="nav-link" onclick="nav('dua-sec', this)"><i class="fa-solid fa-heart"></i><span>الأدعية</span></div>
+        <div class="nav-link active" onclick="nav('home-sec', this)">
+            <i class="fa-solid fa-house-chimney"></i>
+            <span>الرئيسية</span>
+        </div>
+        <div class="nav-link" onclick="nav('quran-sec', this)">
+            <i class="fa-solid fa-book-quran"></i>
+            <span>القرآن</span>
+        </div>
+        <div class="nav-link" onclick="nav('dua-sec', this)">
+            <i class="fa-solid fa-heart"></i>
+            <span>الأدعية</span>
+        </div>
     </nav>
 </div>
 
 <script>
     const audio = new Audio();
     const surahs = [
-        {id:"001", n:"الفاتحة"}, {id:"002", n:"البقرة"}, {id:"018", n:"الكهف"}, 
-        {id:"036", n:"يس"}, {id:"055", n:"الرحمن"}, {id:"067", n:"الملك"},
-        {id:"112", n:"الإخلاص"}, {id:"113", n:"الفلق"}, {id:"114", n:"الناس"}
+        {id:"001", n:"الفاتحة"}, {id:"018", n:"الكهف"}, {id:"036", n:"يس"}, 
+        {id:"055", n:"الرحمن"}, {id:"067", n:"الملك"}, {id:"112", n:"الإخلاص"}
     ];
-    const duas = ["أصبحنا وأصبح الملك لله", "يا حي يا قيوم برحمتك أستغيث", "اللهم صلِ وسلم على نبينا محمد", "سبحان الله وبحمده", "أستغفر الله العظيم"];
+    const duas = ["أصبحنا وأصبح الملك لله", "سبحان الله وبحمده", "اللهم صلِ على محمد", "يا حي يا قيوم برحمتك أستغيث"];
 
-    // بناء قائمة القرآن
+    // بناء قائمة القرآن مع الأيقونات
     const qDiv = document.getElementById('qList');
     surahs.forEach(s => {
-        qDiv.innerHTML += `<div class="item-row" onclick="playAudio('${s.id}', '${s.n}')">
-            <i class="fa-solid fa-play-circle"></i><b>سورة ${s.n}</b><i class="fa-solid fa-volume-up"></i>
-        </div>`;
+        qDiv.innerHTML += `
+            <div class="item-row" onclick="playAudio('${s.id}', '${s.n}')">
+                <i class="fa-solid fa-play"></i>
+                <b>سورة ${s.n}</b>
+                <i class="fa-solid fa-music"></i>
+            </div>`;
     });
 
     // بناء قائمة الأدعية
     const dDiv = document.getElementById('dList');
     duas.forEach(d => {
-        dDiv.innerHTML += `<div class="item-row" style="text-align:right; display:block;">${d}</div>`;
+        dDiv.innerHTML += `
+            <div class="item-row">
+                <i class="fa-solid fa-quote-right"></i>
+                <b>${d}</b>
+            </div>`;
     });
 
     function playAudio(id, name) {
-        // استخدام سيرفر مستقر جداً للتشغيل المباشر
         audio.src = `https://server8.mp3quran.net/ahmad_huth/${id}.mp3`;
         audio.play().then(() => {
             document.getElementById('pBar').style.display = 'flex';
-            document.getElementById('trackName').innerText = "جاري تشغيل: سورة " + name;
+            document.getElementById('trackName').innerText = "جاري التشغيل: سورة " + name;
             document.getElementById('pBtn').className = "fa-solid fa-circle-pause";
-        }).catch(e => alert("اضغط مرة أخرى للتشغيل"));
+        }).catch(e => {
+            console.log("خطأ في التشغيل، يرجى النقر مرة أخرى");
+        });
     }
 
     function togglePlay() {
@@ -161,7 +197,6 @@
         document.getElementById('timer').innerText = new Date().toLocaleTimeString('en-GB');
     }, 1000);
 
-    // جلب المواقيت تلقائياً
     async function getP() {
         try {
             const r = await fetch('https://api.aladhan.com/v1/timingsByCity?city=Casablanca&country=Morocco&method=3');
