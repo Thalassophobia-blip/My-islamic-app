@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تطبيق الذاكرين V2.0</title>
+    <title>تطبيق الذاكرين V2.0 - إصلاح الأيقونات</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        :root { --gold: #ffcf40; --glass: rgba(15, 15, 15, 0.92); --red: #ff3131; }
+        :root { --gold: #ffcf40; --glass: rgba(15, 15, 15, 0.95); --red: #ff3131; }
         * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
         
         body {
@@ -14,55 +14,57 @@
             color: #fff; font-family: 'Segoe UI', Tahoma, sans-serif; height: 100vh; overflow: hidden;
         }
 
-        /* الشريط المتوهج العلوي */
+        /* شريط التنبيه العلوي المتوهج */
         .neon-bar {
-            background: var(--red); color: white; text-align: center; padding: 12px;
-            font-size: 0.8rem; font-weight: bold; box-shadow: 0 0 20px var(--red);
-            border-bottom: 2px solid white; z-index: 10000; position: fixed; top: 0; width: 100%;
-            letter-spacing: 1px;
+            background: var(--red); color: white; text-align: center; padding: 10px;
+            font-size: 0.8rem; font-weight: bold; box-shadow: 0 0 15px var(--red);
+            z-index: 10000; position: fixed; top: 0; width: 100%; border-bottom: 2px solid white;
         }
 
         .overlay { background: rgba(0, 0, 0, 0.7); height: 100vh; display: flex; flex-direction: column; padding-top: 50px; backdrop-filter: blur(12px); }
         .content { flex: 1; overflow-y: auto; padding: 20px 15px 180px 15px; }
         
         .glass-card {
-            background: var(--glass); border-radius: 25px; padding: 20px; margin-bottom: 20px;
-            border: 1px solid rgba(255, 207, 64, 0.25); text-align: center;
+            background: var(--glass); border-radius: 20px; padding: 20px; margin-bottom: 20px;
+            border: 1px solid rgba(255, 207, 64, 0.3); text-align: center;
         }
 
-        .clock { font-size: 3.2rem; color: var(--gold); font-weight: bold; margin: 10px 0; text-shadow: 0 0 10px rgba(255,207,64,0.3); }
+        .clock { font-size: 3rem; color: var(--gold); font-weight: bold; margin: 10px 0; }
         .prayer-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px; }
-        .p-item span { display: block; font-size: 0.6rem; color: var(--gold); margin-bottom: 3px; }
-        .p-item b { font-size: 0.75rem; }
+        .p-item span { display: block; font-size: 0.6rem; color: var(--gold); }
+        .p-item b { font-size: 0.7rem; }
 
-        .section-title { color: var(--gold); border-right: 4px solid var(--gold); padding-right: 12px; margin: 30px 0 15px; font-size: 1.2rem; text-align: right; font-weight: bold; }
+        .section-title { color: var(--gold); border-right: 4px solid var(--gold); padding-right: 12px; margin: 30px 0 15px; font-size: 1.1rem; text-align: right; }
 
+        /* تعديل الأسطر لتظهر الأيقونة كاملة */
         .item-row {
-            background: rgba(255, 255, 255, 0.08); margin-bottom: 12px; padding: 20px;
+            background: rgba(255, 255, 255, 0.08); margin-bottom: 12px; padding: 15px 20px;
             border-radius: 50px; display: flex; align-items: center; justify-content: space-between;
-            cursor: pointer; border: 1px solid rgba(255,255,255,0.05); transition: 0.3s;
+            cursor: pointer; border: 1px solid rgba(255,255,255,0.05); min-height: 60px;
         }
-        .item-row:active { background: rgba(255, 207, 64, 0.2); }
-        .item-row i { color: var(--gold); font-size: 1.3rem; min-width: 35px; text-align: center; }
-        .item-row b { flex: 1; text-align: right; margin-right: 15px; font-size: 1rem; }
+        .item-row i { color: var(--gold); font-size: 1.2rem; display: flex; align-items: center; justify-content: center; width: 30px; }
+        .item-row b { flex: 1; text-align: right; margin-right: 15px; font-size: 0.95rem; line-height: 1.2; }
 
+        /* شريط التنقل السفلي - إصلاح النص والأيقونة */
         .nav-bar {
-            position: fixed; bottom: 0; width: 100%; height: 90px;
-            background: rgba(0,0,0,0.95); display: flex;
-            justify-content: space-around; align-items: center; border-top: 1.5px solid var(--gold);
+            position: fixed; bottom: 0; width: 100%; height: 85px;
+            background: #000; display: flex; justify-content: space-around; 
+            align-items: center; border-top: 1.5px solid var(--gold); z-index: 9999;
         }
-        .nav-link { color: #777; text-align: center; flex: 1; cursor: pointer; transition: 0.3s; }
+        .nav-link { color: #888; text-align: center; flex: 1; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         .nav-link.active { color: var(--gold); }
-        .nav-link i { font-size: 1.6rem; display: block; margin-bottom: 5px; }
-        .nav-link span { font-size: 0.7rem; font-weight: bold; }
+        .nav-link i { font-size: 1.4rem; margin-bottom: 5px; height: 25px; display: block; }
+        .nav-link span { font-size: 0.7rem; font-weight: bold; display: block; }
 
+        /* مشغل الصوت */
         .player-bar {
-            position: fixed; bottom: 100px; left: 15px; right: 15px;
+            position: fixed; bottom: 95px; left: 15px; right: 15px;
             background: var(--gold); color: #000; border-radius: 50px;
-            padding: 15px 25px; display: none; align-items: center; justify-content: space-between;
-            z-index: 5000; box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+            padding: 12px 20px; display: none; align-items: center; justify-content: space-between;
+            z-index: 5000;
         }
-        .event-line { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 1rem; }
+
+        .event-line { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.95rem; }
     </style>
 </head>
 <body>
@@ -71,14 +73,14 @@
 
 <div class="overlay">
     <div class="player-bar" id="pBar">
-        <marquee style="width:70%; font-weight:bold; font-size: 1rem;" id="trackName">جاري التحميل...</marquee>
-        <i class="fa-solid fa-circle-pause" id="pBtn" onclick="togglePlay()" style="font-size:2.2rem; cursor:pointer;"></i>
+        <marquee style="width:70%; font-weight:bold" id="trackName">جاري التحميل...</marquee>
+        <i class="fa-solid fa-circle-pause" id="pBtn" onclick="togglePlay()" style="font-size:2rem;"></i>
     </div>
 
     <div class="content">
         <div id="home-sec" class="page active">
             <div class="glass-card">
-                <small style="color:var(--gold); letter-spacing: 1px;">CASABLANCA, MOROCCO</small>
+                <small style="color:var(--gold)">Casablanca, Morocco</small>
                 <div class="clock" id="timer">00:00:00</div>
                 <div class="prayer-grid">
                     <div class="p-item"><span>Fajr</span><b id="f">--:--</b></div>
@@ -91,97 +93,77 @@
             
             <div class="glass-card" onclick="tasbih()" style="border: 2px solid var(--gold);">
                 <p>عداد التسبيح</p>
-                <h1 id="count" style="font-size:4.5rem; color:var(--gold); margin: 5px 0;">0</h1>
-                <small><i class="fa-solid fa-fingerprint"></i> اضغط هنا للتسبيح</small>
+                <h1 id="count" style="font-size:4rem; color:var(--gold)">0</h1>
+                <small><i class="fa-solid fa-hand-pointer"></i> اضغط هنا</small>
             </div>
         </div>
 
         <div id="quran-sec" class="page" style="display:none">
-            <div class="section-title">المصحف الصوتي المباشر</div>
+            <div class="section-title">القرآن الكريم</div>
             <div id="qList"></div>
         </div>
 
         <div id="dua-sec" class="page" style="display:none">
-            <div class="section-title">أذكار الصباح والمساء</div>
+            <div class="section-title">أذكار وأحاديث</div>
             <div id="azkarList"></div>
-            <div class="section-title">أدعية مستجابة</div>
-            <div id="duaList"></div>
-            <div class="section-title">أحاديث نبوية شريفة</div>
+            <div class="section-title">أحاديث نبوية</div>
             <div id="hadithList"></div>
         </div>
 
         <div id="event-sec" class="page" style="display:none">
-            <div class="section-title">مواعيد ومناسبات 2026</div>
+            <div class="section-title">مواعيد 2026</div>
             <div class="glass-card">
-                <div class="event-line"><span style="color:var(--gold)">🌙 بداية شهر رمضان</span><b>18 فبراير</b></div>
-                <div class="event-line"><span>⭐ عيد الفطر المبارك</span><b>20 مارس</b></div>
-                <div class="event-line"><span>🕋 يوم عرفة (الحج)</span><b>26 مايو</b></div>
-                <div class="event-line"><span>🐏 عيد الأضحى المبارك</span><b>27 مايو</b></div>
-                <div class="event-line"><span>🕌 رأس السنة الهجرية</span><b>16 يونيو</b></div>
-                <div class="event-line"><span>🎂 المولد النبوي</span><b>26 أغسطس</b></div>
+                <div class="event-line"><span>🌙 بداية رمضان</span><b>18 فبراير</b></div>
+                <div class="event-line"><span>⭐ عيد الفطر</span><b>20 مارس</b></div>
+                <div class="event-line"><span>🕋 يوم عرفة</span><b>26 مايو</b></div>
+                <div class="event-line"><span>🐏 عيد الأضحى</span><b>27 مايو</b></div>
             </div>
         </div>
     </div>
 
     <nav class="nav-bar">
         <div class="nav-link active" onclick="nav('home-sec', this)">
-            <i class="fa-solid fa-kaaba"></i><span>الرئيسية</span>
+            <i class="fa-solid fa-house"></i><span>الرئيسية</span>
         </div>
         <div class="nav-link" onclick="nav('quran-sec', this)">
-            <i class="fa-solid fa-book-quran"></i><span>القرآن</span>
+            <i class="fa-solid fa-book-open"></i><span>القرآن</span>
         </div>
         <div class="nav-link" onclick="nav('dua-sec', this)">
-            <i class="fa-solid fa-hands-praying"></i><span>الأذكار</span>
+            <i class="fa-solid fa-heart"></i><span>الأذكار</span>
         </div>
         <div class="nav-link" onclick="nav('event-sec', this)">
-            <i class="fa-solid fa-calendar-days"></i><span>المناسبات</span>
+            <i class="fa-solid fa-calendar"></i><span>المناسبات</span>
         </div>
     </nav>
 </div>
 
 <script>
     const audio = new Audio();
-    
-    // محتوى ضخم - القرآن (أكثر من 20 سورة)
     const surahs = [
-        {id:"001", n:"الفاتحة"}, {id:"002", n:"البقرة"}, {id:"003", n:"آل عمران"}, {id:"004", n:"النساء"},
-        {id:"018", n:"الكهف"}, {id:"019", n:"مريم"}, {id:"020", n:"طه"}, {id:"036", n:"يس"},
-        {id:"055", n:"الرحمن"}, {id:"056", n:"الواقعة"}, {id:"067", n:"الملك"}, {id:"078", n:"النبأ"},
-        {id:"087", n:"الأعلى"}, {id:"093", n:"الضحى"}, {id:"094", n:"الشرح"}, {id:"097", n:"القدر"},
-        {id:"101", n:"القارعة"}, {id:"103", n:"العصر"}, {id:"108", n:"الكوثر"}, {id:"110", n:"النصر"},
-        {id:"112", n:"الإخلاص"}, {id:"113", n:"الفلق"}, {id:"114", n:"الناس"}
+        {id:"001", n:"الفاتحة"}, {id:"018", n:"الكهف"}, {id:"036", n:"يس"},
+        {id:"055", n:"الرحمن"}, {id:"067", n:"الملك"}, {id:"112", n:"الإخلاص"},
+        {id:"113", n:"الفلق"}, {id:"114", n:"الناس"}
     ];
     
-    // محتوى الأذكار
-    const azkar = ["أصبحنا وأصبح الملك لله", "أمسينا وأمسى الملك لله", "رضيت بالله رباً وبالإسلام ديناً", "يا حي يا قيوم برحمتك أستغيث", "سبحان الله وبحمده (100 مرة)", "أستغفر الله العظيم وأتوب إليه", "اللهم بك أصبحنا وبك أمسينا"];
-    
-    // محتوى الأدعية
-    const duas = ["اللهم إنك عفو تحب العفو فاعف عني", "ربنا آتنا في الدنيا حسنة وفي الآخرة حسنة", "اللهم اغفر لي ولوالدي وللمؤمنين", "يا مقلب القلوب ثبت قلبي على دينك", "اللهم إني أسألك الهدى والتقى والعفاف والغنى"];
-    
-    // محتوى الأحاديث
-    const hadiths = ["قال ﷺ: إنما الأعمال بالنيات", "قال ﷺ: خيركم من تعلم القرآن وعلمه", "قال ﷺ: الدين النصيحة", "قال ﷺ: اتق الله حيثما كنت", "قال ﷺ: المسلم من سلم المسلمون من لسانه ويده"];
+    const azkar = ["أصبحنا وأصبح الملك لله", "رضيت بالله رباً وبالإسلام ديناً", "يا حي يا قيوم برحمتك أستغيث"];
+    const hadiths = ["خيركم من تعلم القرآن وعلمه", "إنما الأعمال بالنيات", "اتق الله حيثما كنت"];
 
-    // ملء القوائم برمجياً
     const qDiv = document.getElementById('qList');
     surahs.forEach(s => {
-        qDiv.innerHTML += `<div class="item-row" onclick="playAudio('${s.id}', '${s.n}')"><i class="fa-solid fa-circle-play"></i><b>سورة ${s.n}</b><i class="fa-solid fa-volume-high"></i></div>`;
+        qDiv.innerHTML += `<div class="item-row" onclick="playAudio('${s.id}', '${s.n}')"><i class="fa-solid fa-play"></i><b>سورة ${s.n}</b><i class="fa-solid fa-music"></i></div>`;
     });
 
     const azDiv = document.getElementById('azkarList');
     azkar.forEach(a => { azDiv.innerHTML += `<div class="item-row"><i class="fa-solid fa-sun"></i><b>${a}</b></div>`; });
 
-    const duDiv = document.getElementById('duaList');
-    duas.forEach(d => { duDiv.innerHTML += `<div class="item-row"><i class="fa-solid fa-heart"></i><b>${d}</b></div>`; });
-
     const hDiv = document.getElementById('hadithList');
-    hadiths.forEach(h => { hDiv.innerHTML += `<div class="item-row"><i class="fa-solid fa-quote-right"></i><b>${h}</b></div>`; });
+    hadiths.forEach(h => { hDiv.innerHTML += `<div class="item-row"><i class="fa-solid fa-comment"></i><b>${h}</b></div>`; });
 
     function playAudio(id, name) {
         audio.src = `https://server8.mp3quran.net/ahmad_huth/${id}.mp3`;
         audio.play().then(() => {
             document.getElementById('pBar').style.display = 'flex';
-            document.getElementById('trackName').innerText = "جاري تشغيل: سورة " + name + " بصوت أحمد الحذيفي";
-            document.getElementById('pBtn').className = "fa-solid fa-circle-pause";
+            document.getElementById('trackName').innerText = "تشغيل: " + name;
         });
     }
 
@@ -191,7 +173,7 @@
     }
 
     let c = 0;
-    function tasbih() { c++; document.getElementById('count').innerText = c; if(navigator.vibrate) navigator.vibrate(50); }
+    function tasbih() { c++; document.getElementById('count').innerText = c; }
 
     function nav(id, el) {
         document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
