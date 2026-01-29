@@ -3,178 +3,291 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>المنصة الإسلامية الشاملة</title>
+    <title>تطبيقي الإسلامي المتكامل</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root { --gold: #ffcf40; --glass: rgba(0, 0, 0, 0.85); --item-bg: rgba(255, 255, 255, 0.08); }
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; scroll-behavior: smooth; }
-        
-        body { 
-            margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, sans-serif;
-            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), 
-                        url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=2000') center/cover no-repeat fixed;
-            color: #fff; overflow: hidden; height: 100vh;
+        /* التنسيق العام والسمات */
+        :root {
+            --gold: #ffcf40;
+            --bg-dark: #0f172a;
+            --glass: rgba(15, 23, 42, 0.9);
+            --card-bg: rgba(255, 255, 255, 0.05);
         }
 
-        .app-container { height: 100vh; display: flex; flex-direction: column; }
-        .content-area { flex: 1; overflow-y: auto; padding: 20px 15px 120px 15px; }
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
 
-        .page { display: none; animation: slideUp 0.4s ease-out; }
+        body {
+            margin: 0;
+            padding: 0;
+            background: radial-gradient(circle at top, #1e293b, #0f172a);
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            color: #ffffff;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* حاوية التطبيق */
+        .app-wrapper {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* شريط الصوت العلوي */
+        .audio-player-bar {
+            background: var(--gold);
+            color: #000;
+            padding: 12px 20px;
+            display: none;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            z-index: 1001;
+        }
+
+        /* المحتوى المتغير */
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px 15px 100px 15px;
+        }
+
+        .page { display: none; animation: fadeIn 0.4s ease; }
         .page.active { display: block; }
-        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
-        .glass-card { 
-            background: var(--glass); backdrop-filter: blur(15px); border-radius: 25px; 
-            padding: 20px; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.6); text-align: center;
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* الكروت والتصاميم */
+        .card {
+            background: var(--card-bg);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 20px;
+            text-align: center;
+            backdrop-filter: blur(10px);
         }
 
-        /* القرآن الكريم */
-        .surah-list { display: grid; gap: 10px; }
-        .surah-card {
-            background: var(--item-bg); padding: 15px; border-radius: 15px;
-            display: flex; justify-content: space-between; align-items: center;
-            border: 1px solid rgba(255,207,64,0.2); cursor: pointer; transition: 0.3s;
+        .gold-text { color: var(--gold); text-shadow: 0 0 10px rgba(255, 207, 64, 0.3); }
+
+        /* قسم القرآن */
+        .surah-item {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,207,64,0.1);
+            padding: 18px;
+            border-radius: 15px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: 0.3s;
         }
-        .surah-card:hover { background: rgba(255,207,64,0.1); border-color: var(--gold); }
-        .play-btn { color: var(--gold); font-size: 1.5rem; }
+        .surah-item:hover { background: rgba(255,207,64,0.1); }
 
-        /* الأحاديث والأدعية */
-        .text-box { font-size: 1.2rem; line-height: 1.8; color: #f0f0f0; padding: 15px; border-right: 4px solid var(--gold); background: rgba(255,255,255,0.03); border-radius: 10px; margin-bottom: 15px; text-align: right; }
+        /* السبحة */
+        .tasbih-btn {
+            width: 180px; height: 180px;
+            border: 6px solid var(--gold);
+            border-radius: 50%;
+            margin: 30px auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 0 30px rgba(255, 207, 64, 0.2);
+        }
+        .tasbih-btn:active { transform: scale(0.95); background: rgba(255,207,64,0.1); }
 
-        /* مشغل الصوت الثابت */
-        .audio-player {
-            position: fixed; top: 10px; left: 50%; transform: translateX(-50%);
-            width: 90%; max-width: 400px; background: var(--gold); color: #000;
-            padding: 10px 20px; border-radius: 50px; display: none;
-            justify-content: space-between; align-items: center; z-index: 2000; font-weight: bold;
+        /* الأذكار */
+        .zikr-card {
+            text-align: right;
+            padding: 15px;
+            background: rgba(255,255,255,0.05);
+            border-right: 4px solid var(--gold);
+            border-radius: 10px;
+            margin-bottom: 15px;
+            line-height: 1.6;
         }
 
         /* القائمة السفلية */
-        .nav-bar {
-            position: fixed; bottom: 0; width: 100%; height: 85px;
-            background: var(--glass); backdrop-filter: blur(25px);
-            display: flex; justify-content: space-around; align-items: center;
-            border-top: 1px solid var(--gold); z-index: 1000;
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            background: var(--glass);
+            display: flex;
+            justify-content: space-around;
+            padding: 15px 0;
+            border-top: 1px solid var(--gold);
+            backdrop-filter: blur(20px);
         }
-        .nav-item { color: #777; text-align: center; flex: 1; transition: 0.3s; }
-        .nav-item.active { color: var(--gold); transform: translateY(-8px); }
-        .nav-item i { font-size: 1.5rem; margin-bottom: 5px; display: block; }
-        .nav-item span { font-size: 0.75rem; }
+
+        .nav-item {
+            color: #64748b;
+            text-align: center;
+            flex: 1;
+            font-size: 0.8rem;
+            cursor: pointer;
+        }
+        .nav-item.active { color: var(--gold); transform: translateY(-5px); transition: 0.3s; }
+        .nav-item i { font-size: 1.4rem; margin-bottom: 5px; display: block; }
+
     </style>
 </head>
 <body>
 
-    <div class="audio-player" id="player-status">
-        <span id="playing-name">جارٍ التشغيل...</span>
-        <i class="fa-solid fa-circle-stop" onclick="stopAudio()" style="font-size: 1.8rem; cursor: pointer;"></i>
+    <div class="audio-player-bar" id="audioBar">
+        <span id="playingTitle">تشغيل...</span>
+        <i class="fa-solid fa-circle-stop" onclick="stopAudio()" style="font-size: 1.5rem;"></i>
     </div>
 
-    <div class="app-container">
-        <div class="content-area">
+    <div class="app-wrapper">
+        <div class="main-content">
             
             <div id="home" class="page active">
-                <div class="glass-card">
-                    <h2 id="clock" style="font-size: 2.5rem; color: var(--gold); margin:0;">00:00:00</h2>
-                    <p id="main-dua" style="font-style: italic; font-size: 1.1rem; min-height: 50px;"></p>
+                <div class="card">
+                    <h1 id="clock" class="gold-text" style="font-size: 3.2rem; margin:0;">00:00</h1>
+                    <p id="date" style="opacity: 0.6;"></p>
+                    <hr style="opacity: 0.1; margin: 20px 0;">
+                    <p id="mainDua" style="font-size: 1.2rem; font-style: italic;">"اللهم اجعلنا من الذاكرين"</p>
                 </div>
-                <div class="glass-card" onclick="tasbih()">
-                    <p style="margin:0; opacity:0.7;">اضغط للتسبيح</p>
-                    <div id="t-count" style="font-size: 4rem; color: var(--gold); font-weight: bold;">0</div>
+                
+                <div class="card">
+                    <p>إحصائيات التسبيح اليوم</p>
+                    <h2 id="totalT" class="gold-text">0</h2>
                 </div>
             </div>
 
             <div id="quran" class="page">
-                <h2 style="text-align: center; color: var(--gold);">القرآن الكريم (صوت)</h2>
-                <div class="surah-list" id="surah-container">
+                <h2 class="gold-text" style="text-align:center;">القرآن الكريم (صوت)</h2>
+                <div id="surahList">
                     </div>
             </div>
 
-            <div id="hadith" class="page">
-                <h2 style="text-align: center; color: var(--gold);">أحاديث نبوية</h2>
-                <div id="hadith-container"></div>
+            <div id="azkar" class="page">
+                <h2 class="gold-text" style="text-align:center;">الأذكار المأثورة</h2>
+                <div class="zikr-card">اللهم بك أصبحنا، وبك أمسينا، وبك نحيا، وبك نموت، وإليك النشور.</div>
+                <div class="zikr-card">رضيت بالله رباً، وبالإسلام ديناً، وبمحمد صلى الله عليه وسلم نبياً.</div>
+                <div class="zikr-card">سبحان الله وبحمده عدد خلقه، ورضا نفسه، وزنة عرشه، ومداد كلماته.</div>
+                <h2 class="gold-text" style="text-align:center; margin-top:30px;">أحاديث نبوية</h2>
+                <div class="zikr-card" style="border-right-color: #22c55e;">قال ﷺ: (من صلّى عليّ صلاةً واحدةً صلّى الله عليه بها عشراً).</div>
+                <div class="zikr-card" style="border-right-color: #22c55e;">قال ﷺ: (كلمتان خفيفتان على اللسان، ثقيلتان في الميزان: سبحان الله وبحمده، سبحان الله العظيم).</div>
+            </div>
+
+            <div id="tasbih" class="page">
+                <div class="card">
+                    <h2 class="gold-text">السبحة الإلكترونية</h2>
+                    <div class="tasbih-btn" onclick="addCount()">
+                        <span style="font-size: 0.9rem; opacity:0.7;">انقر هنا</span>
+                        <span id="t-num" style="font-size: 4rem; font-weight: bold;">0</span>
+                    </div>
+                    <button onclick="resetT()" style="background:none; border:1px solid #ff4444; color:#ff4444; padding:8px 25px; border-radius:10px; margin-top:10px;">تصفير</button>
+                </div>
             </div>
 
         </div>
 
-        <nav class="nav-bar">
-            <div class="nav-item active" onclick="showPage('home', this)"><i class="fa-solid fa-mosque"></i><span>الرئيسية</span></div>
-            <div class="nav-item" onclick="showPage('quran', this)"><i class="fa-solid fa-kaaba"></i><span>القرآن</span></div>
-            <div class="nav-item" onclick="showPage('hadith', this)"><i class="fa-solid fa-book-open-reader"></i><span>الأحاديث</span></div>
+        <nav class="bottom-nav">
+            <div class="nav-item active" onclick="navTo('home', this)"><i class="fa-solid fa-house-chimney-mosque"></i><span>الرئيسية</span></div>
+            <div class="nav-item" onclick="navTo('quran', this)"><i class="fa-solid fa-kaaba"></i><span>القرآن</span></div>
+            <div class="nav-item" onclick="navTo('azkar', this)"><i class="fa-solid fa-book-open"></i><span>الأذكار</span></div>
+            <div class="nav-item" onclick="navTo('tasbih', this)"><i class="fa-solid fa-fingerprint"></i><span>السبحة</span></div>
         </nav>
     </div>
 
     <script>
         const audio = new Audio();
         
-        // بيانات السور (أمثلة)
-        const surahs = [
-            { id: "001", name: "الفاتحة" }, { id: "002", name: "البقرة" },
-            { id: "036", name: "يس" }, { id: "055", name: "الرحمن" },
-            { id: "067", name: "الملك" }, { id: "112", name: "الإخلاص" }
+        // بيانات السور
+        const surahData = [
+            {id: "001", name: "الفاتحة"}, {id: "002", name: "البقرة (مختصر)"},
+            {id: "018", name: "الكهف"}, {id: "036", name: "يس"},
+            {id: "055", name: "الرحمن"}, {id: "067", name: "الملك"},
+            {id: "112", name: "الإخلاص"}, {id: "113", name: "الفلق"}, {id: "114", name: "الناس"}
         ];
 
-        // بيانات الأحاديث
-        const hadiths = [
-            "قال ﷺ: (إنما الأعمال بالنيات، وإنما لكل امرئ ما نوى)",
-            "قال ﷺ: (بلغوا عني ولو آية)",
-            "قال ﷺ: (من سلك طريقاً يلتمس فيه علماً سهل الله له به طريقاً إلى الجنة)",
-            "قال ﷺ: (خيركم من تعلم القرآن وعلمه)"
-        ];
-
-        // توليد قائمة السور
-        const container = document.getElementById('surah-container');
-        surahs.forEach(s => {
-            container.innerHTML += `
-                <div class="surah-card" onclick="playQuran('${s.id}', '${s.name}')">
+        // تهيئة قائمة السور
+        const sList = document.getElementById('surahList');
+        surahData.forEach(s => {
+            sList.innerHTML += `
+                <div class="surah-item" onclick="playAudio('${s.id}', '${s.name}')">
                     <span>سورة ${s.name}</span>
-                    <i class="fa-solid fa-circle-play play-btn"></i>
+                    <i class="fa-solid fa-play gold-text"></i>
                 </div>`;
         });
 
-        // تشغيل القرآن
-        function playQuran(id, name) {
+        // تشغيل الصوت
+        function playAudio(id, name) {
             audio.src = `https://server10.mp3quran.net/minsh/mobile/${id}.mp3`;
-            audio.play();
-            document.getElementById('player-status').style.display = 'flex';
-            document.getElementById('playing-name').innerText = `تشغيل: سورة ${name}`;
+            audio.play().catch(e => alert("عذراً، تعذر تشغيل الصوت"));
+            document.getElementById('audioBar').style.display = 'flex';
+            document.getElementById('playingTitle').innerText = "استماع: سورة " + name;
         }
 
         function stopAudio() {
             audio.pause();
-            document.getElementById('player-status').style.display = 'none';
+            document.getElementById('audioBar').style.display = 'none';
         }
 
-        // تبديل الصفحات
-        function showPage(id, el) {
+        // التنقل
+        function navTo(id, el) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             document.getElementById(id).classList.add('active');
             el.classList.add('active');
         }
 
-        // الساعة والعداد
-        setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString('ar-EG'); }, 1000);
-        
-        let count = 0;
-        function tasbih() {
+        // الوقت والتاريخ
+        setInterval(() => {
+            const now = new Date();
+            document.getElementById('clock').innerText = now.toLocaleTimeString('ar-EG', {hour:'2-digit', minute:'2-digit', second:'2-digit'});
+            document.getElementById('date').innerText = now.toLocaleDateString('ar-EG', {weekday:'long', year:'numeric', month:'long', day:'numeric'});
+        }, 1000);
+
+        // السبحة والذاكرة المحلية
+        let count = localStorage.getItem('tasbihCount') || 0;
+        document.getElementById('t-num').innerText = count;
+        document.getElementById('totalT').innerText = count;
+
+        function addCount() {
             count++;
-            document.getElementById('t-count').innerText = count;
-            if (navigator.vibrate) navigator.vibrate(40);
+            updateDisplay();
+            if(navigator.vibrate) navigator.vibrate(50);
         }
 
-        // عرض الأحاديث
-        const hContainer = document.getElementById('hadith-container');
-        hadiths.forEach(h => { hContainer.innerHTML += `<div class="text-box">${h}</div>`; });
+        function resetT() {
+            if(confirm("هل تريد تصفير العداد؟")) {
+                count = 0;
+                updateDisplay();
+            }
+        }
 
-        // تبديل أذكار الرئيسية
-        const duas = ["سبحان الله وبحمده", "أستغفر الله العظيم", "اللهم صلِ على محمد", "الحمد لله دائماً"];
+        function updateDisplay() {
+            document.getElementById('t-num').innerText = count;
+            document.getElementById('totalT').innerText = count;
+            localStorage.setItem('tasbihCount', count);
+        }
+
+        // تبديل الأدعية تلقائياً
+        const duas = [
+            "اللهم صلِ وسلم على نبينا محمد",
+            "سبحان الله وبحمده، سبحان الله العظيم",
+            "لا إله إلا أنت سبحانك إني كنت من الظالمين",
+            "أستغفر الله العظيم وأتوب إليه",
+            "يا حي يا قيوم برحمتك أستغيث"
+        ];
         let dIdx = 0;
         setInterval(() => {
             dIdx = (dIdx + 1) % duas.length;
-            document.getElementById('main-dua').innerText = `"${duas[dIdx]}"`;
-        }, 4000);
-        document.getElementById('main-dua').innerText = `"${duas[0]}"`;
+            document.getElementById('mainDua').innerText = `"${duas[dIdx]}"`;
+        }, 5000);
 
     </script>
 </body>
