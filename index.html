@@ -6,201 +6,151 @@
     <title>تطبيق الذاكرين الاحترافي 2026</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root { --gold: #ffcf40; --glass: rgba(18, 18, 18, 0.88); --accent: rgba(255, 207, 64, 0.2); }
+        :root { --gold: #ffcf40; --spotify: #1DB954; --glass: rgba(15, 15, 15, 0.9); }
         * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
         
         body {
             background: url('https://images.unsplash.com/photo-1441974231531-c6227db76b6e?q=80&w=2000') center/cover no-repeat fixed;
-            color: #fff; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; height: 100vh; overflow: hidden;
+            color: #fff; font-family: 'Segoe UI', sans-serif; height: 100vh; overflow: hidden;
         }
 
         .overlay { background: rgba(0, 0, 0, 0.6); height: 100vh; display: flex; flex-direction: column; backdrop-filter: blur(10px); }
-        .content { flex: 1; overflow-y: auto; padding: 20px 15px 160px 15px; scroll-behavior: smooth; }
+        .content { flex: 1; overflow-y: auto; padding: 20px 15px 120px 15px; }
 
         /* الكروت الزجاجية الفخمة */
         .glass-card {
-            background: var(--glass); border-radius: 25px; padding: 20px; margin-bottom: 20px;
-            border: 1px solid rgba(255, 207, 64, 0.25); text-align: center; backdrop-filter: blur(20px);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+            background: var(--glass); border-radius: 25px; padding: 25px; margin-bottom: 20px;
+            border: 1px solid rgba(255, 207, 64, 0.2); text-align: center; backdrop-filter: blur(20px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
-        .clock { font-size: 3.5rem; color: var(--gold); font-weight: bold; margin: 10px 0; text-shadow: 0 0 20px rgba(255,207,64,0.4); }
+        .clock { font-size: 3.5rem; color: var(--gold); font-weight: bold; margin: 10px 0; }
         
-        /* مواقيت الصلاة */
-        .prayer-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px; }
-        .p-item span { display: block; font-size: 0.7rem; color: var(--gold); text-transform: uppercase; margin-bottom: 5px; }
-        .p-item b { font-size: 0.9rem; letter-spacing: 1px; }
+        /* مواقيت الصلاة بأرقام إنجليزية */
+        .prayer-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px; }
+        .p-item span { display: block; font-size: 0.7rem; color: var(--gold); margin-bottom: 5px; }
+        .p-item b { font-size: 0.9rem; }
 
-        /* قوائم العناصر */
-        .section-title { color: var(--gold); text-align: center; margin: 25px 0 15px; font-size: 1.3rem; display: flex; align-items: center; justify-content: center; gap: 10px; }
-        .section-title::before, .section-title::after { content: ""; flex: 1; height: 1px; background: rgba(255,207,64,0.3); }
-
-        .item-box {
-            background: rgba(255, 255, 255, 0.06); margin-bottom: 12px; padding: 18px 22px;
+        /* القوائم الموسعة */
+        .section-title { color: var(--gold); text-align: center; margin: 25px 0 15px; font-size: 1.3rem; border-bottom: 1px solid var(--gold); padding-bottom: 10px; }
+        
+        .item-row {
+            background: rgba(255, 255, 255, 0.07); margin-bottom: 12px; padding: 18px 25px;
             border-radius: 50px; display: flex; align-items: center; justify-content: space-between;
-            cursor: pointer; border: 1px solid rgba(255,255,255,0.03); transition: 0.3s;
+            cursor: pointer; border: 1px solid rgba(255,255,255,0.05); transition: 0.3s;
         }
-        .item-box:hover { background: var(--accent); border-color: var(--gold); }
-        .item-box i { color: var(--gold); font-size: 1.3rem; }
-        .item-box b { font-size: 1rem; flex: 1; margin-right: 15px; }
-
-        /* مشغل الصوت */
-        .player-bar {
-            position: fixed; bottom: 100px; left: 15px; right: 15px;
-            background: var(--gold); color: #000; border-radius: 50px;
-            padding: 15px 25px; display: none; align-items: center; justify-content: space-between;
-            z-index: 2000; box-shadow: 0 10px 40px rgba(0,0,0,0.6);
-        }
-        .player-bar marquee { font-weight: bold; width: 70%; font-size: 0.95rem; }
+        .item-row:active { transform: scale(0.96); background: rgba(29, 185, 84, 0.2); }
+        .item-row i.fa-spotify { color: var(--spotify); font-size: 1.5rem; }
+        .item-row b { font-size: 1rem; flex: 1; margin-right: 15px; text-align: right; }
 
         /* الملاحة السفلية */
         .nav-bar {
-            position: fixed; bottom: 0; width: 100%; height: 90px;
-            background: rgba(10, 10, 10, 0.98); display: flex;
+            position: fixed; bottom: 0; width: 100%; height: 85px;
+            background: rgba(5, 5, 5, 0.98); display: flex;
             justify-content: space-around; align-items: center; border-top: 1px solid var(--gold);
         }
-        .nav-link { color: #666; text-align: center; cursor: pointer; font-size: 0.8rem; flex: 1; transition: 0.4s; }
-        .nav-link.active { color: var(--gold); transform: translateY(-8px); }
-        .nav-link i { font-size: 1.7rem; display: block; margin-bottom: 6px; }
+        .nav-link { color: #666; text-align: center; cursor: pointer; font-size: 0.8rem; flex: 1; }
+        .nav-link.active { color: var(--gold); }
+        .nav-link i { font-size: 1.6rem; display: block; margin-bottom: 5px; }
 
-        /* بحث */
-        .search-box {
-            background: rgba(255,255,255,0.1); border: 1px solid var(--gold); border-radius: 50px;
-            padding: 12px 20px; width: 100%; color: #fff; margin-bottom: 20px; outline: none;
-        }
-
-        .event-item { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.95rem; }
+        .event-line { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
     </style>
 </head>
 <body>
 
 <div class="overlay">
-    <div class="player-bar" id="pBar">
-        <marquee id="trackName">جاري تحميل السورة...</marquee>
-        <i class="fa-solid fa-circle-pause" id="pBtn" onclick="togglePlay()" style="font-size:2.4rem; cursor:pointer;"></i>
-    </div>
-
     <div class="content">
         <div id="home-sec" class="page active">
             <div class="glass-card">
-                <p style="color:var(--gold); letter-spacing: 1px;">CASABLANCA, MOROCCO</p>
+                <p style="color:var(--gold)">CASABLANCA, MOROCCO</p>
                 <div class="clock" id="timer">00:00:00</div>
                 <div class="prayer-grid">
-                    <div class="p-item"><span>Fajr</span><b id="f">--:--</b></div>
-                    <div class="p-item"><span>Dhuhr</span><b id="d">--:--</b></div>
-                    <div class="p-item"><span>Asr</span><b id="a">--:--</b></div>
-                    <div class="p-item"><span>Maghrib</span><b id="m">--:--</b></div>
-                    <div class="p-item"><span>Isha</span><b id="i">--:--</b></div>
+                    <div class="p-item"><span>Fajr</span><b id="f">07:01</b></div>
+                    <div class="p-item"><span>Dhuhr</span><b id="d">13:43</b></div>
+                    <div class="p-item"><span>Asr</span><b id="a">16:37</b></div>
+                    <div class="p-item"><span>Maghrib</span><b id="m">18:59</b></div>
+                    <div class="p-item"><span>Isha</span><b id="i">20:29</b></div>
                 </div>
             </div>
 
-            <div class="glass-card" onclick="tasbih()" style="background: rgba(255,207,64,0.15); border: 2px solid var(--gold);">
-                <p>عداد التسبيح الإلكتروني</p>
+            <div class="glass-card" onclick="tasbih()" style="background: rgba(255,207,64,0.1); border: 2px solid var(--gold);">
+                <p>عداد التسبيح (انقر هنا)</p>
                 <h1 id="count" style="font-size:4.5rem; margin:10px 0;">0</h1>
-                <button onclick="event.stopPropagation(); resetCount()" style="background:none; border:1px solid #fff; color:#fff; padding:6px 20px; border-radius:20px; font-size:13px; cursor:pointer;">إعادة تصفير</button>
+                <button onclick="event.stopPropagation(); resetC()" style="background:none; border:1px solid #fff; color:#fff; padding:5px 15px; border-radius:10px; font-size:12px;">تصفير</button>
             </div>
 
             <div class="glass-card">
-                <h3 style="color:var(--gold); margin-bottom:15px;"><i class="fa-solid fa-star-and-crescent"></i> مواعيد تهمك 2026</h3>
-                <div class="event-item"><span>🌙 بداية شهر رمضان</span><b>1 مارس</b></div>
-                <div class="event-item"><span>⭐ عيد الفطر السعيد</span><b>31 مارس</b></div>
-                <div class="event-item"><span>🕋 يوم عرفة (الحج)</span><b>26 مايو</b></div>
-                <div class="event-item"><span>🐑 عيد الأضحى المبارك</span><b>27 مايو</b></div>
-                <div class="event-item"><span>🗓️ رأس السنة الهجرية</span><b>16 يونيو</b></div>
+                <h3 style="color:var(--gold); margin-bottom:15px;">مواعيد تهمك 2026</h3>
+                <div class="event-line"><span>🌙 بداية رمضان</span><b>1 March</b></div>
+                <div class="event-line"><span>⭐ عيد الفطر</span><b>31 March</b></div>
+                <div class="event-line"><span>🕋 عيد الأضحى</span><b>27 May</b></div>
             </div>
         </div>
 
         <div id="quran-sec" class="page" style="display:none">
-            <input type="text" class="search-box" placeholder="ابحث عن اسم السورة..." oninput="filterQuran(this.value)">
-            <div class="section-title">المصحف الصوتي - المنشاوي</div>
+            <h3 class="section-title">تشغيل السور عبر Spotify</h3>
             <div id="qList"></div>
         </div>
 
         <div id="dua-sec" class="page" style="display:none">
-            <div class="section-title">أذكار مأثورة</div>
+            <h3 class="section-title">أذكار يومية</h3>
             <div id="azkarList"></div>
-            <div class="section-title">أدعية مستجابة</div>
-            <div id="duaList"></div>
-            <div class="section-title">أحاديث نبوية</div>
+            <h3 class="section-title">أحاديث نبوية</h3>
             <div id="hadithList"></div>
         </div>
     </div>
 
     <nav class="nav-bar">
-        <div class="nav-link active" onclick="nav('home-sec', this)"><i class="fa-solid fa-mosque"></i><span>الرئيسية</span></div>
-        <div class="nav-link" onclick="nav('quran-sec', this)"><i class="fa-solid fa-book-open"></i><span>القرآن</span></div>
+        <div class="nav-link active" onclick="nav('home-sec', this)"><i class="fa-solid fa-calendar-check"></i><span>المناسبات</span></div>
+        <div class="nav-link" onclick="nav('quran-sec', this)"><i class="fa-solid fa-play-circle"></i><span>القرآن</span></div>
         <div class="nav-link" onclick="nav('dua-sec', this)"><i class="fa-solid fa-heart"></i><span>الأذكار</span></div>
     </nav>
 </div>
 
 <script>
-    const audio = new Audio();
+    // قائمة السور للتشغيل عبر Spotify
+    const surahs = ["الفاتحة", "البقرة", "آل عمران", "الكهف", "يس", "الرحمن", "الواقعة", "الملك", "النبأ", "الأعلى", "الضحى", "الشرح", "القدر", "البينة", "الزلزلة", "العاديات", "القارعة", "التكاثر", "العصر", "الهمزة", "الفيل", "قريش", "الماعون", "الكوثر", "الكافرون", "النصر", "المسد", "الإخلاص", "الفلق", "الناس"];
     
-    // محتوى ضخم - القرآن
-    const quranData = [
-        {id:"001", n:"الفاتحة"}, {id:"002", n:"البقرة"}, {id:"003", n:"آل عمران"}, {id:"004", n:"النساء"},
-        {id:"005", n:"المائدة"}, {id:"006", n:"الأنعام"}, {id:"007", n:"الأعراف"}, {id:"008", n:"الأنفال"},
-        {id:"009", n:"التوبة"}, {id:"010", n:"يونس"}, {id:"018", n:"الكهف"}, {id:"019", n:"مريم"},
-        {id:"020", n:"طه"}, {id:"036", n:"يس"}, {id:"055", n:"الرحمن"}, {id:"056", n:"الواقعة"},
-        {id:"067", n:"الملك"}, {id:"078", n:"النبأ"}, {id:"112", n:"الإخلاص"}, {id:"114", n:"الناس"}
-    ];
+    const azkar = ["أصبحنا وأصبح الملك لله", "سبحان الله وبحمده 100 مرة", "لا إله إلا الله وحده لا شريك له", "أستغفر الله وأتوب إليه", "اللهم صلِ وسلم على نبينا محمد", "رضيت بالله رباً وبالإسلام ديناً", "يا حي يا قيوم برحمتك أستغيث"];
+    
+    const hadiths = ["قال ﷺ: إنما الأعمال بالنيات", "قال ﷺ: خيركم من تعلم القرآن وعلمه", "قال ﷺ: بلغوا عني ولو آية", "قال ﷺ: الدين النصيحة", "قال ﷺ: المسلم من سلم المسلمون من لسانه ويده"];
 
-    // محتوى ضخم - أذكار وأدعية
-    const azkar = ["أصبحنا وأصبح الملك لله", "يا حي يا قيوم برحمتك أستغيث", "رضيت بالله رباً وبالإسلام ديناً", "سبحان الله وبحمده عدد خلقه", "أستغفر الله العظيم وأتوب إليه", "اللهم بك أصبحنا وبك أمسينا"];
-    const duas = ["اللهم إنك عفو تحب العفو فاعف عني", "ربنا آتنا في الدنيا حسنة وفي الآخرة حسنة", "اللهم اغفر لي ولوالدي وللمؤمنين", "يا مقلب القلوب ثبت قلبي على دينك"];
-    const hadiths = ["قال ﷺ: إنما الأعمال بالنيات", "قال ﷺ: خيركم من تعلم القرآن وعلمه", "قال ﷺ: بلغوا عني ولو آية", "قال ﷺ: من سلك طريقاً يلتمس فيه علماً..."];
+    // بناء القوائم
+    const qL = document.getElementById('qList');
+    surahs.forEach(s => {
+        qL.innerHTML += `<div class="item-row" onclick="openSpotify('${s}')"><i class="fa-brands fa-spotify"></i><b>سورة ${s}</b><i class="fa-solid fa-headphones"></i></div>`;
+    });
+
+    const azL = document.getElementById('azkarList');
+    azkar.forEach(a => { azL.innerHTML += `<div class="item-row" style="display:block; text-align:right">${a}</div>`; });
+
+    const hL = document.getElementById('hadithList');
+    hadiths.forEach(h => { hL.innerHTML += `<div class="item-row" style="display:block; text-align:right; border-right:4px solid var(--gold)">${h}</div>`; });
+
+    // ميزة Spotify
+    function openSpotify(name) {
+        // يفتح سبوتيفاي ويبحث عن السورة مباشرة بصوت المنشاوي
+        window.open(`spotify:search:سورة ${name} المنشاوي`, '_blank');
+    }
 
     // جلب المواقيت
-    async function getP() {
+    async function getPrayers() {
         try {
             const r = await fetch('https://api.aladhan.com/v1/timingsByCity?city=Casablanca&country=Morocco&method=3');
             const d = await r.json();
             const t = d.data.timings;
-            const ids = ['f','d','a','m','i'];
-            const keys = ['Fajr','Dhuhr','Asr','Maghrib','Isha'];
-            ids.forEach((id, index) => document.getElementById(id).innerText = t[keys[index]]);
+            document.getElementById('f').innerText = t.Fajr;
+            document.getElementById('d').innerText = t.Dhuhr;
+            document.getElementById('a').innerText = t.Asr;
+            document.getElementById('m').innerText = t.Maghrib;
+            document.getElementById('i').innerText = t.Isha;
         } catch(e) {}
     }
 
-    // بناء القوائم
-    function renderLists() {
-        const qL = document.getElementById('qList');
-        quranData.forEach(s => {
-            qL.innerHTML += `<div class="item-box q-item" onclick="playQ('${s.id}','${s.n}')"><i class="fa-solid fa-play"></i><b>سورة ${s.n}</b><i class="fa-solid fa-headphones"></i></div>`;
-        });
-
-        const azL = document.getElementById('azkarList');
-        azkar.forEach(a => { azL.innerHTML += `<div class="item-box" style="border-right: 4px solid #2ecc71">${a}</div>`; });
-
-        const duL = document.getElementById('duaList');
-        duas.forEach(d => { duL.innerHTML += `<div class="item-box" style="border-right: 4px solid #3498db">${d}</div>`; });
-
-        const hL = document.getElementById('hadithList');
-        hadiths.forEach(h => { hL.innerHTML += `<div class="item-box" style="border-right: 4px solid #e74c3c">${h}</div>`; });
-    }
-
-    function playQ(id, n) {
-        audio.src = `https://server10.mp3quran.net/minsh/mobile/${id}.mp3`;
-        audio.play();
-        document.getElementById('pBar').style.display = 'flex';
-        document.getElementById('trackName').innerText = "سورة " + n + " - بصوت القارئ محمد صديق المنشاوي";
-        document.getElementById('pBtn').className = "fa-solid fa-circle-pause";
-    }
-
-    function togglePlay() {
-        if(audio.paused) { audio.play(); document.getElementById('pBtn').className="fa-solid fa-circle-pause"; }
-        else { audio.pause(); document.getElementById('pBtn').className="fa-solid fa-circle-play"; }
-    }
-
-    function filterQuran(val) {
-        document.querySelectorAll('.q-item').forEach(el => {
-            el.style.display = el.innerText.includes(val) ? "flex" : "none";
-        });
-    }
-
+    // العداد والوقت والتنقل
     let c = 0;
-    function tasbih() { c++; document.getElementById('count').innerText = c; if(navigator.vibrate) navigator.vibrate(50); }
-    function resetCount() { c = 0; document.getElementById('count').innerText = 0; }
+    function tasbih() { c++; document.getElementById('count').innerText = c; if(navigator.vibrate) navigator.vibrate(40); }
+    function resetC() { c = 0; document.getElementById('count').innerText = 0; }
 
     function nav(id, el) {
         document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
@@ -213,7 +163,7 @@
         document.getElementById('timer').innerText = new Date().toLocaleTimeString('en-GB');
     }, 1000);
 
-    getP(); renderLists();
+    getPrayers();
 </script>
 </body>
 </html>
