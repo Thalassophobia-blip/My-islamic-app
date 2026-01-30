@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>الذاكرين 2026 - النسخة المصححة</title>
+    <title>تطبيق الذاكرين 2026 - الإصدار المتكامل</title>
     <style>
         :root { 
             --gold: #ffcf40; 
             --bg: #0a0a0a;
-            --card: rgba(20, 20, 20, 0.95); /* تقليل الشفافية للوضوح */
+            --card: rgba(25, 25, 25, 0.98);
             --red: #ff3131;
             --nav-h: 75px;
         }
@@ -20,15 +20,9 @@
             color: #fff; font-family: system-ui, sans-serif; height: 100vh; overflow: hidden;
         }
 
-        .main-wrapper { 
-            background: rgba(0, 0, 0, 0.8); /* زيادة غمق الخلفية للوضوح */
-            height: 100vh; display: flex; flex-direction: column; padding-top: 45px;
-        }
+        .main-wrapper { background: rgba(0, 0, 0, 0.82); height: 100vh; display: flex; flex-direction: column; padding-top: 45px; }
 
-        .scroll-area { 
-            flex: 1; overflow-y: auto; 
-            padding: 15px 15px calc(var(--nav-h) + 40px) 15px; 
-        }
+        .scroll-area { flex: 1; overflow-y: auto; padding: 15px 15px calc(var(--nav-h) + 40px) 15px; }
         
         .card {
             background: var(--card); border-radius: 20px; padding: 20px; 
@@ -36,29 +30,31 @@
             text-align: center; box-shadow: 0 10px 20px rgba(0,0,0,0.5);
         }
 
-        .clock-display { font-size: 3.2rem; color: var(--gold); font-weight: bold; margin: 5px 0; }
+        .clock-display { font-size: 3rem; color: var(--gold); font-weight: bold; margin: 5px 0; text-shadow: 0 0 10px rgba(255,207,64,0.3); }
         
-        .prayer-times { 
-            display: grid; grid-template-columns: repeat(5, 1fr); 
-            gap: 5px; margin-top: 15px; padding-top: 15px;
-            border-top: 1px solid rgba(255,255,255,0.1); 
-        }
-        .prayer-times div { background: rgba(255,255,255,0.05); padding: 5px; border-radius: 8px; }
+        .prayer-times { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.1); }
         .prayer-times span { display: block; font-size: 0.65rem; color: var(--gold); }
-        .prayer-times b { font-size: 0.8rem; color: #fff; }
+        .prayer-times b { font-size: 0.8rem; }
 
-        .section-head { 
-            color: var(--gold); border-right: 4px solid var(--gold); 
-            padding-right: 10px; margin: 25px 0 15px; font-size: 1.3rem; text-align: right; 
+        .search-box {
+            width: 100%; padding: 12px; border-radius: 12px; border: 1px solid var(--gold);
+            background: rgba(0,0,0,0.5); color: #fff; margin-bottom: 15px; text-align: center; font-size: 1rem;
         }
 
         .list-item {
-            background: rgba(40, 40, 40, 0.98); /* منع الشفافية المفرطة في القوائم */
-            margin-bottom: 10px; padding: 18px; border-radius: 15px; 
-            display: flex; align-items: center; justify-content: space-between;
-            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(40, 40, 40, 0.95); margin-bottom: 10px; padding: 18px; 
+            border-radius: 15px; display: flex; align-items: center; 
+            justify-content: space-between; border: 1px solid rgba(255,255,255,0.1);
         }
-        .list-item b { flex: 1; text-align: right; margin: 0 15px; font-size: 1.1rem; color: #fff; }
+        .list-item b { flex: 1; text-align: right; margin: 0 15px; font-size: 1.1rem; }
+
+        /* شاشة القراءة (تظهر عند تشغيل السورة) */
+        #quran-viewer {
+            position: fixed; top: 45px; left: 0; width: 100%; height: calc(100% - 180px);
+            background: #fff; z-index: 4000; display: none; border-radius: 20px 20px 0 0;
+            overflow: hidden;
+        }
+        #close-viewer { position: absolute; top: 10px; right: 10px; background: var(--red); color: #fff; border: none; padding: 8px 15px; border-radius: 10px; z-index: 4001; }
 
         .bottom-nav {
             position: fixed; bottom: 0; width: 100%; height: var(--nav-h);
@@ -67,7 +63,6 @@
         }
         .nav-item { color: #888; text-align: center; flex: 1; cursor: pointer; }
         .nav-item.active { color: var(--gold); }
-        .nav-item div { font-size: 1.5rem; }
 
         .audio-player {
             position: fixed; bottom: 85px; left: 10px; right: 10px;
@@ -80,48 +75,45 @@
 <body>
 
 <div class="main-wrapper">
+    <div id="quran-viewer">
+        <button id="close-viewer" onclick="closeReader()">إغلاق القراءة ×</button>
+        <iframe id="quran-frame" src="" style="width:100%; height:100%; border:none;"></iframe>
+    </div>
+
     <div class="audio-player" id="player">
-        <marquee id="playing-title" style="width:75%">جاري التشغيل...</marquee>
+        <marquee id="playing-title" style="width:70%">جاري التشغيل...</marquee>
         <span onclick="toggleAudio()" id="play-status" style="font-size:1.8rem; cursor:pointer">⏸️</span>
     </div>
 
     <div class="scroll-area">
         <div id="p-home" class="page">
             <div class="card">
-                <small style="color:var(--gold)">🇲🇦 Casablanca</small>
+                <div id="daily-quote" style="font-style:italic; color:var(--gold); margin-bottom:10px; font-size:0.9rem;">"ألا بذكر الله تطمئن القلوب"</div>
+                <small>🇲🇦 Casablanca, Morocco</small>
                 <div class="clock-display" id="time">00:00:00</div>
                 <div class="prayer-times">
-                    <div><span>الفجر</span><b id="f">06:12</b></div>
-                    <div><span>الظهر</span><b id="d">12:45</b></div>
-                    <div><span>العصر</span><b id="a">15:50</b></div>
-                    <div><span>المغرب</span><b id="m">18:15</b></div>
-                    <div><span>العشاء</span><b id="i">19:40</b></div>
+                    <div><span>الفجر</span><b id="f">--:--</b></div>
+                    <div><span>الظهر</span><b id="d">--:--</b></div>
+                    <div><span>العصر</span><b id="a">--:--</b></div>
+                    <div><span>المغرب</span><b id="m">--:--</b></div>
+                    <div><span>العشاء</span><b id="i">--:--</b></div>
                 </div>
             </div>
             
-            <div class="card" onclick="counter()" style="border: 2px solid var(--gold); background: rgba(255,207,64,0.1)">
-                <p>📿 السبحة الإلكترونية</p>
+            <div class="card" onclick="counter()" style="border: 2.2px solid var(--gold); background: rgba(255,207,64,0.1);">
+                <p>📿 سبحة إلكترونية</p>
                 <h1 id="c-val" style="font-size:4.5rem; color:var(--gold)">0</h1>
-                <small>اضغط للتسبيح</small>
+                <small>انقر للتسبيح</small>
             </div>
         </div>
 
         <div id="p-quran" class="page" style="display:none">
-            <div class="section-head">📖 القرآن الكريم كاملاً</div>
+            <input type="text" id="sSearch" class="search-box" placeholder="🔍 ابحث عن اسم السورة...">
             <div id="surah-list"></div>
         </div>
 
         <div id="p-dua" class="page" style="display:none">
-            <div class="section-head">✨ أذكار يومية</div>
             <div id="azkar-list"></div>
-        </div>
-
-        <div id="p-events" class="page" style="display:none">
-            <div class="section-head">🗓️ مواعيد 2026</div>
-            <div class="card">
-                <div style="display:flex; justify-content:space-between; padding:15px 0; border-bottom:1px solid #333"><span>🌙 رمضان</span><b>18 فبراير</b></div>
-                <div style="display:flex; justify-content:space-between; padding:15px 0;"><span>🕋 عيد الأضحى</span><b>27 مايو</b></div>
-            </div>
         </div>
     </div>
 
@@ -129,7 +121,6 @@
         <div class="nav-item active" onclick="show('p-home', this)"><div>🏠</div><span>الرئيسية</span></div>
         <div class="nav-item" onclick="show('p-quran', this)"><div>📖</div><span>القرآن</span></div>
         <div class="nav-item" onclick="show('p-dua', this)"><div>🤲</div><span>الأذكار</span></div>
-        <div class="nav-item" onclick="show('p-events', this)"><div>🗓️</div><span>الأعياد</span></div>
     </nav>
 </div>
 
@@ -139,28 +130,44 @@
 
     const sList = document.getElementById('surah-list');
     surahNames.forEach((name, index) => {
-        let id = (index + 1).toString().padStart(3, '0');
-        sList.innerHTML += `<div class="list-item" onclick="playS('${id}', '${name}')"><span>▶️</span><b>سورة ${name}</b><span>🎧</span></div>`;
+        let num = index + 1;
+        let id = num.toString().padStart(3, '0');
+        sList.innerHTML += `<div class="list-item" onclick="playS('${id}', '${name}', ${num})"><span>📖</span><b>سورة ${name}</b><span>▶️</span></div>`;
     });
 
-    const azkar = ["أصبحنا وأصبح الملك لله", "يا حي يا قيوم برحمتك أستغيث", "سبحان الله وبحمده"];
-    const azContainer = document.getElementById('azkar-list');
-    azkar.forEach(a => { azContainer.innerHTML += `<div class="list-item"><b>${a}</b></div>`; });
-
-    function playS(id, name) {
+    // تشغيل الصوت وعرض النص
+    function playS(id, name, num) {
         player.src = `https://server8.mp3quran.net/ahmad_huth/${id}.mp3`;
         player.play();
         document.getElementById('player').style.display = 'flex';
-        document.getElementById('playing-title').innerText = "تشغيل: سورة " + name;
+        document.getElementById('playing-title').innerText = "استماع وقراءة: " + name;
+        
+        // عرض المصحف الإلكتروني (نص السورة)
+        document.getElementById('quran-viewer').style.display = 'block';
+        document.getElementById('quran-frame').src = `https://quran.com/${num}`;
     }
+
+    function closeReader() { document.getElementById('quran-viewer').style.display = 'none'; }
 
     function toggleAudio() {
         if(player.paused) { player.play(); document.getElementById('play-status').innerText = "⏸️"; }
         else { player.pause(); document.getElementById('play-status').innerText = "▶️"; }
     }
 
-    let countVal = 0;
-    function counter() { countVal++; document.getElementById('c-val').innerText = countVal; if(navigator.vibrate) navigator.vibrate(40); }
+    // البحث
+    document.getElementById('sSearch').addEventListener('input', function(e) {
+        let term = e.target.value.toLowerCase();
+        document.querySelectorAll('#surah-list .list-item').forEach(item => {
+            item.style.display = item.innerText.includes(term) ? 'flex' : 'none';
+        });
+    });
+
+    // أذكار وعداد
+    const azkar = ["أصبحنا وأصبح الملك لله", "يا حي يا قيوم برحمتك أستغيث", "سبحان الله وبحمده", "اللهم صل وسلم على نبينا محمد"];
+    azkar.forEach(a => { document.getElementById('azkar-list').innerHTML += `<div class="list-item"><b>${a}</b></div>`; });
+    
+    let c = 0;
+    function counter() { c++; document.getElementById('c-val').innerText = c; if(navigator.vibrate) navigator.vibrate(40); }
 
     function show(pId, navEl) {
         document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
@@ -169,22 +176,21 @@
         navEl.classList.add('active');
     }
 
-    // جلب توقيت الصلاة الحقيقي
     async function getPrayers() {
         try {
             const res = await fetch('https://api.aladhan.com/v1/timingsByCity?city=Casablanca&country=Morocco&method=3');
             const data = await res.json();
             const t = data.data.timings;
-            document.getElementById('f').innerText = t.Fajr;
-            document.getElementById('d').innerText = t.Dhuhr;
-            document.getElementById('a').innerText = t.Asr;
-            document.getElementById('m').innerText = t.Maghrib;
-            document.getElementById('i').innerText = t.Isha;
-        } catch(e) { console.log("خطأ في جلب الأوقات"); }
+            ['Fajr','Dhuhr','Asr','Maghrib','Isha'].forEach((p, i) => {
+                document.getElementById(['f','d','a','m','i'][i]).innerText = t[p];
+            });
+        } catch(e) {}
     }
     getPrayers();
-
     setInterval(() => { document.getElementById('time').innerText = new Date().toLocaleTimeString('en-GB'); }, 1000);
+
+    const quotes = ["📌 إن مع العسر يسراً", "📌 ألا بذكر الله تطمئن القلوب", "📌 واصبر لحكم ربك فإنك بأعيننا", "📌 صَلِّ على النبي ﷺ واغتنم الأجر"];
+    document.getElementById('daily-quote').innerText = quotes[Math.floor(Math.random()*quotes.length)];
 </script>
 </body>
 </html>
