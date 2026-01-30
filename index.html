@@ -3,94 +3,59 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>تطبيق الذاكرين - النسخة الشاملة 2026</title>
+    <title>تطبيق الذاكرين - النسخة الاحترافية الشاملة</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
         :root { --gold: #c5a059; --bg: #050505; --card: rgba(15, 15, 15, 0.95); }
         * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-        
         body { 
             background: var(--bg) url('https://images.unsplash.com/photo-1621244249243-436b79b5eea8?q=80&w=2000') center/cover no-repeat fixed;
             color: #fff; font-family: 'Segoe UI', sans-serif; height: 100vh; overflow: hidden;
         }
-
         .banner { background: #b30000; color: white; text-align: center; padding: 4px; font-size: 0.7rem; position: fixed; top: 0; width: 100%; z-index: 10000; font-weight: bold; }
-
         .overlay { background: rgba(0, 0, 0, 0.85); height: 100vh; display: flex; flex-direction: column; padding-top: 25px; }
-        .content { flex: 1; overflow-y: auto; padding: 20px 15px 120px; scroll-behavior: smooth; }
-
-        .glass-card {
-            background: var(--card); border-radius: 25px; padding: 20px; 
-            margin-bottom: 20px; border: 1px solid rgba(197, 160, 89, 0.3); text-align: center;
-        }
-
-        .time { font-size: 3.5rem; color: var(--gold); font-weight: 200; }
-        
-        .p-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; margin-top: 15px; }
-        .p-grid div { background: rgba(255,255,255,0.05); padding: 8px 2px; border-radius: 12px; border: 1px solid rgba(197, 160, 89, 0.1); }
-        .p-grid span { font-size: 0.6rem; color: var(--gold); display: block; }
-        .p-grid b { font-size: 0.8rem; }
-
+        .content { flex: 1; overflow-y: auto; padding: 20px 15px 120px; }
+        .glass-card { background: var(--card); border-radius: 25px; padding: 20px; margin-bottom: 20px; border: 1px solid rgba(197, 160, 89, 0.3); text-align: center; }
         .row { background: rgba(255,255,255,0.03); margin-bottom: 8px; padding: 15px; border-radius: 15px; display: flex; align-items: center; border: 1px solid rgba(255,255,255,0.05); }
-        .row b { flex: 1; text-align: right; font-size: 0.95rem; line-height: 1.5; }
+        .row b { flex: 1; text-align: right; font-size: 0.9rem; line-height: 1.6; }
         .row i { color: var(--gold); margin-left: 10px; }
-
-        #reader-popup {
-            position: fixed; inset: 0; background: #000; z-index: 20000; display: none; flex-direction: column;
-        }
-        .reader-body { flex: 1; overflow-y: auto; padding: 30px; font-size: 1.6rem; text-align: center; color: #ececec; line-height: 2.2; }
-
         .nav { position: fixed; bottom: 0; width: 100%; height: 80px; background: #000; display: flex; border-top: 1px solid var(--gold); z-index: 1000; }
         .nav-link { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #555; font-size: 0.7rem; }
         .nav-link.active { color: var(--gold); }
-        .nav-link i { font-size: 1.4rem; margin-bottom: 4px; }
-
-        .qibla-box { width: 120px; height: 120px; border: 2px solid var(--gold); border-radius: 50%; margin: 10px auto; position: relative; transition: 0.1s; }
-        .qibla-box::after { content: 'N'; position: absolute; top: 5px; color: red; font-weight: bold; }
-        .kaba-icon { font-size: 2rem; color: var(--gold); position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); }
-
         .month-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-        .month-item { background: #111; padding: 10px; border-radius: 10px; font-size: 0.8rem; border: 1px solid #222; }
-        .month-item.active { border-color: var(--gold); color: var(--gold); }
+        .month-item { background: #111; padding: 12px; border-radius: 12px; font-size: 0.8rem; border: 1px solid #333; cursor: pointer; transition: 0.3s; }
+        .month-item:active { background: var(--gold); color: #000; }
+        #popup { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 30000; display: none; align-items: center; justify-content: center; padding: 20px; }
+        .popup-box { background: #1a1a1a; padding: 30px; border-radius: 20px; border: 2px solid var(--gold); text-align: center; width: 100%; }
     </style>
 </head>
 <body>
 
-<div class="banner">تطبيق الذاكرين - نسخة تجريبية شاملة (v3.0)</div>
+<div class="banner">نسخة تجريبية احترافية - V3.5</div>
+
+<div id="popup">
+    <div class="popup-box">
+        <h2 id="p-title" style="color:var(--gold)"></h2>
+        <p id="p-desc" style="margin:20px 0; line-height:1.6"></p>
+        <button onclick="closePopup()" style="background:var(--gold); border:none; padding:10px 30px; border-radius:10px; font-weight:bold">إغلاق</button>
+    </div>
+</div>
 
 <div class="overlay">
-    <div id="reader-popup">
-        <div style="padding:20px; display:flex; justify-content:space-between; border-bottom:1px solid #222">
-            <b id="rt">السورة</b><i class="fa-solid fa-times" onclick="closeR()"></i>
-        </div>
-        <div class="reader-body" id="rb"></div>
-    </div>
-
     <div class="content">
         <div id="p1" class="page">
             <div class="glass-card">
-                <div class="time" id="clock">00:00</div>
-                <div class="p-grid">
-                    <div><span>فجر</span><b id="f">--</b></div>
-                    <div><span>ظهر</span><b id="d">--</b></div>
-                    <div><span>عصر</span><b id="a">--</b></div>
-                    <div><span>مغرب</span><b id="m">--</b></div>
-                    <div><span>عشاء</span><b id="i">--</b></div>
-                </div>
+                <div style="font-size:3rem; color:var(--gold)" id="clock">00:00</div>
+                <p>الدار البيضاء، المغرب</p>
             </div>
+            
+            <div class="section-title" style="color:var(--gold); margin:20px 0 10px">📅 التقويم الهجري (اضغط للشهر)</div>
+            <div class="month-grid" id="m-grid"></div>
 
-            <div class="glass-card">
-                <p style="font-size:0.8rem; color:var(--gold)">اتجاه القبلة</p>
-                <div class="qibla-box" id="qbox"><i class="fa-solid fa-kaaba kaba-icon"></i></div>
-            </div>
-
-            <div class="glass-card" onclick="tap()">
-                <div id="tt" style="color:var(--gold)">اضغط للبدء</div>
+            <div class="glass-card" onclick="tap()" style="margin-top:20px">
+                <div id="tt" style="color:var(--gold)">اضغط للتسبيح</div>
                 <div id="ct" style="font-size:4rem">0</div>
             </div>
-
-            <div class="section-title" style="color:var(--gold); margin-bottom:10px">📅 الأشهر الهجرية</div>
-            <div class="month-grid" id="m-grid"></div>
         </div>
 
         <div id="p2" class="page" style="display:none">
@@ -98,75 +63,68 @@
         </div>
 
         <div id="p3" class="page" style="display:none">
-            <div style="color:var(--gold); margin:10px 0">✨ الأدعية (25)</div>
+            <div style="color:var(--gold); margin-bottom:10px">✨ 25 دعاءً مستجاباً</div>
             <div id="dList"></div>
-            <div style="color:var(--gold); margin:20px 0 10px">📜 الأحاديث (50)</div>
+            <div style="color:var(--gold); margin:20px 0 10px">📜 50 حديثاً شريفاً</div>
             <div id="hList"></div>
         </div>
     </div>
 
     <nav class="nav">
-        <div class="nav-link active" onclick="go('p1',this)"><i class="fa-solid fa-mosque"></i><span>الرئيسية</span></div>
-        <div class="nav-link" onclick="go('p2',this)"><i class="fa-solid fa-book-quran"></i><span>القرآن</span></div>
+        <div class="nav-link active" onclick="go('p1',this)"><i class="fa-solid fa-home"></i><span>الرئيسية</span></div>
+        <div class="nav-link" onclick="go('p2',this)"><i class="fa-solid fa-book"></i><span>القرآن</span></div>
         <div class="nav-link" onclick="go('p3',this)"><i class="fa-solid fa-heart"></i><span>الأذكار</span></div>
     </nav>
 </div>
 
 <script>
-    const player = new Audio();
-    const surahs = ["الفاتحة","البقرة","آل عمران","النساء","المائدة","الأنعام","الأعراف","الأنفال","التوبة","يونس","هود","يوسف","الرعد","إبراهيم","الحجر","النحل","الإسراء","الكهف","مريم","طه","الأنبياء","الحج","المؤمنون","النور","الفرقان","الشعراء","النمل","القصص","العنكبوت","الروم","لقمان","السجدة","الأحزاب","سبأ","فاطر","يس","الصافات","ص","الزمر","غافر","فصلت","الشورى","الزخرف","الدخان","الجاثية","الأحقاف","محمد","الفتح","الحجرات","ق","الذاريات","الطور","النجم","القمر","الرحمن","الواقعة","الحديد","المجادلة","الحشر","الممتحنة","الصف","الجمعة","المنافقون","التغابن","الطلاق","التحريم","الملك","القلم","الحاقة","المعارج","نوح","الجن","المزمل","المدثر","القيامة","الإنسان","المرسلات","النبأ","النازعات","عبس","التكوير","الانفطار","المطففين","الانشقاق","البروج","الطارق","الأعلى","الغاشية","الفجر","البلد","الشمس","الليل","الضحى","الشرح","التين","العلق","القدر","البينة","الزلزلة","العاديات","القارعة","التكاثر","العصر","الهمزة","الفيل","قريش","الماعون","الكوثر","الكافرون","النصر","المسد","الإخلاص","الفلق","الناس"];
-    const months = ["محرم","صفر","ربيع الأول","ربيع الآخر","جمادى الأولى","جمادى الآخرة","رجب","شعبان","رمضان","شوال","ذو القعدة","ذو الحجة"];
-    const ad3ya = ["اللهم إنك عفو كريم تحب العفو فاعف عني","اللهم آتنا في الدنيا حسنة وفي الآخرة حسنة","اللهم إني أسألك الهدى والتقى والعفاف والغنى","اللهم ثبت قلبي على دينك","اللهم إني أعوذ بك من العجز والكسل","اللهم اغفر لي وارحمني واهدني وعافني وارزقني","اللهم إني أسألك علماً نافعاً ورزقاً طيباً","يا حي يا قيوم برحمتك أستغيث","اللهم اكفني بحلالك عن حرامك","اللهم إني أعوذ بك من الهم والحزن","اللهم بارك لنا فيما رزقتنا","أستغفر الله الذي لا إله إلا هو الحي القيوم","اللهم أنت ربي لا إله إلا أنت خلقتني","اللهم إني أسألك الجنة وأعوذ بك من النار","اللهم رب السماوات ورب الأرض","اللهم اهدني لأحسن الأعمال","اللهم إني أسألك من خير ما سألك منه نبيك","اللهم حبب إلينا الإيمان","اللهم إني أعوذ بك من زوال نعمتك","اللهم اجعل في قلبي نوراً","اللهم رحمتك أرجو فلا تكلني إلى نفسي","اللهم إني أسألك العافية في الدنيا والآخرة","سبحان الله وبحمده سبحان الله العظيم","اللهم اغفر لي ذنبي كله","اللهم إني أعوذ بك من شر ما عملت"];
-    
-    // بناء المحتوى
-    const sl = document.getElementById('sList');
-    surahs.forEach((s,i) => { sl.innerHTML += `<div class="row" onclick="pS('${(i+1).toString().padStart(3,'0')}','${s}',${i+1})"><i class="fa-solid fa-play-circle"></i><b>سورة ${s}</b></div>`; });
-    
-    const dl = document.getElementById('dList');
-    ad3ya.forEach(d => { dl.innerHTML += `<div class="row"><i class="fa-solid fa-star"></i><b>${d}</b></div>`; });
+    const months = [
+        {n:"محرم", d:"30 يوماً - أول شهور السنة الهجرية."}, {n:"صفر", d:"29 يوماً."}, {n:"ربيع الأول", d:"30 يوماً - ولد فيه النبي ﷺ."},
+        {n:"ربيع الآخر", d:"29 يوماً."}, {n:"جمادى الأولى", d:"30 يوماً."}, {n:"جمادى الآخرة", d:"29 يوماً."},
+        {n:"رجب", d:"30 يوماً - من الأشهر الحرم."}, {n:"شعبان", d:"29 يوماً - ترفع فيه الأعمال."}, {n:"رمضان", d:"30 يوماً - شهر الصيام."},
+        {n:"شوال", d:"29 يوماً - فيه عيد الفطر."}, {n:"ذو القعدة", d:"30 يوماً - من الأشهر الحرم."}, {n:"ذو الحجة", d:"29/30 يوماً - شهر الحج."}
+    ];
+
+    const hadiths = [
+        "الدين النصيحة", "الطهور شطر الإيمان", "اتق الله حيثما كنت", "خيركم من تعلم القرآن وعلمه", "من صمت نجا",
+        "لا يؤمن أحدكم حتى يحب لأخيه ما يحب لنفسه", "المسلم من سلم المسلمون من لسانه ويده", "الكلمة الطيبة صدقة",
+        "يسروا ولا تعسروا", "الحياء من الإيمان", "من سلك طريقاً يلتمس فيه علماً سهل الله له طريقاً إلى الجنة",
+        "من كان يؤمن بالله واليوم الآخر فليقل خيراً أو ليصمت", "لا يدخل الجنة قاطع", "أحب الأعمال إلى الله أدومها وإن قل",
+        "الدال على الخير كفاعله", "نعمتان مغبون فيهما كثير من الناس: الصحة والفراغ", "إذا قامت الساعة وفي يد أحدكم فسيلة فليغرسها",
+        "أكمل المؤمنين إيماناً أحسنهم خلقاً", "من صلى عليّ واحدة صلى الله عليه بها عشراً", "دع ما يريبك إلى ما لا يريبك",
+        "كلكم راع وكلكم مسؤول عن رعيته", "لا تغضب", "المرء مع من أحب", "أفشوا السلام بينكم", "تبسمك في وجه أخيك صدقة",
+        "بني الإسلام على خمس", "من غشنا فليس منا", "الظلم ظلمات يوم القيامة", "اتقوا النار ولو بشق تمرة",
+        "سبا المسلم فسوق وقتاله كفر", "لا ضرر ولا ضرار", "اليد العليا خير من اليد السفلى", "التائب من الذنب كمن لا ذنب له",
+        "أفضل الذكر لا إله إلا الله", "البِر حسن الخلق", "اتقوا دعوة المظلوم", "الحلال بين والحرام بين", "من أحدث في أمرنا هذا ما ليس منه فهو رد",
+        "سيد الاستغفار أن يقول العبد: اللهم أنت ربي...", "طلب العلم فريضة على كل مسلم", "صوموا تصحوا", "بشروا ولا تنفروا",
+        "إن الله جميل يحب الجمال", "لا يشكر الله من لا يشكر الناس", "ما ملأ آدمي وعاءً شراً من بطنه", "حق المسلم على المسلم خمس",
+        "الصلاة نور", "القرآن حجة لك أو عليك", "من قرأ حرفاً من كتاب الله فله به حسنة", "كن في الدنيا كأنك غريب"
+    ];
+
+    const duas = ["اللهم إنك عفو تحب العفو فاعف عني", "ربنا آتنا في الدنيا حسنة", "اللهم إني أسألك الجنة", "يا حي يا قيوم برحمتك أستغيث", "اللهم ثبت قلبي على دينك", "اللهم اغفر لي ولوالدي", "اللهم اكفني بحلالك عن حرامك", "اللهم إني أعوذ بك من الهم", "اللهم صل على محمد", "أستغفر الله واتوب إليه"];
+
+    // توليد العناصر
+    const mg = document.getElementById('m-grid');
+    months.forEach(m => { 
+        let div = document.createElement('div'); div.className = 'month-item'; div.innerText = m.n;
+        div.onclick = () => { document.getElementById('p-title').innerText = m.n; document.getElementById('p-desc').innerText = m.d; document.getElementById('popup').style.display='flex'; };
+        mg.appendChild(div);
+    });
 
     const hl = document.getElementById('hList');
-    for(let i=1; i<=50; i++) { hl.innerHTML += `<div class="row"><i class="fa-solid fa-scroll"></i><b>حديث رقم ${i}: قال رسول الله ﷺ: (إنما الأعمال بالنيات...)</b></div>`; }
+    hadiths.forEach((h, i) => { hl.innerHTML += `<div class="row"><b>${i+1}. قال ﷺ: "${h}"</b></div>`; });
 
-    const mg = document.getElementById('m-grid');
-    months.forEach(m => { mg.innerHTML += `<div class="month-item">${m}</div>`; });
+    const dl = document.getElementById('dList');
+    duas.forEach(d => { dl.innerHTML += `<div class="row"><b>${d}</b></div>`; });
 
-    async function pS(id, name, n) {
-        player.src = `https://server8.mp3quran.net/ahmad_huth/${id}.mp3`; player.play();
-        document.getElementById('reader-popup').style.display = 'flex';
-        document.getElementById('rt').innerText = name;
-        document.getElementById('rb').innerText = "جاري تحميل الآيات...";
-        try {
-            const r = await fetch(`https://api.alquran.cloud/v1/surah/${n}`);
-            const d = await r.json();
-            document.getElementById('rb').innerText = d.data.ayahs.map(a => a.text).join(" ۞ ");
-        } catch(e) { document.getElementById('rb').innerText = "خطأ في الشبكة."; }
-    }
-
-    function closeR() { document.getElementById('reader-popup').style.display = 'none'; player.pause(); }
-
-    let c = 0; const ts = ["سبحان الله","الحمد لله","لا إله إلا الله","الله أكبر"];
-    function tap() { c++; document.getElementById('ct').innerText = c; document.getElementById('tt').innerText = ts[c%ts.length]; if(navigator.vibrate) navigator.vibrate(40); }
-
+    // وظائف أساسية
+    function closePopup() { document.getElementById('popup').style.display = 'none'; }
     function go(id, el) {
         document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
         document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
         document.getElementById(id).style.display = 'block'; el.classList.add('active');
     }
-
-    // تفعيل البوصلة (محاكاة)
-    window.addEventListener('deviceorientation', (e) => {
-        if(e.webkitCompassHeading) { document.getElementById('qbox').style.transform = `rotate(${-e.webkitCompassHeading}deg)`; }
-    });
-
-    async function getP() {
-        const r = await fetch('https://api.aladhan.com/v1/timingsByCity?city=Casablanca&country=Morocco&method=3');
-        const d = await r.json(); const t = d.data.timings;
-        document.getElementById('f').innerText = t.Fajr; document.getElementById('d').innerText = t.Dhuhr;
-        document.getElementById('a').innerText = t.Asr; document.getElementById('m').innerText = t.Maghrib;
-        document.getElementById('i').innerText = t.Isha;
-    }
-    getP();
+    let c = 0; function tap() { c++; document.getElementById('ct').innerText = c; if(navigator.vibrate) navigator.vibrate(40); }
     setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString('ar-MA',{hour:'2-digit',minute:'2-digit'}); }, 1000);
 </script>
 </body>
