@@ -1,291 +1,344 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ذاكر - التطبيق المتكامل</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <style>
-        :root { --gold: #c5a059; --bg: #050505; --card: #0c0c0c; --text: #e0e0e0; }
-        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-        
-        body { 
-            background: var(--bg) url('https://www.transparenttextures.com/patterns/islamic-art.png');
-            color: var(--text); font-family: 'Segoe UI', sans-serif; height: 100vh; overflow: hidden;
-        }
+import pygame
+import random
+import sys
+import math
 
-        .overlay { background: rgba(0,0,0,0.85); height: 100vh; display: flex; flex-direction: column; }
-        
-        /* شريط التنبيه العلوي */
-        .beta-banner { background: #b30000; color: #fff; text-align: center; padding: 5px; font-size: 0.7rem; font-weight: bold; position: fixed; top: 0; width: 100%; z-index: 10001; }
+# إعداد الأساسيات
+pygame.init()
+WIDTH, HEIGHT = 800, 600
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
+pygame.display.set_caption("Space Invaders: Elite Generation")
+clock = pygame.time.Clock()
 
-        .top-nav { padding: 25px 20px 10px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(197, 160, 89, 0.2); }
-        .top-nav h2 { color: var(--gold); font-size: 1.2rem; }
+# الألوان
+COLOR_BG = (10, 10, 25)
+COLOR_PLAYER = (0, 255, 204)
+COLOR_ENEMY_BASIC = (255, 51, 51)
+COLOR_ENEMY_FAST = (255, 153, 51)
+COLOR_LASER_PLAYER = (0, 255, 102)
+COLOR_LASER_ENEMY = (255, 51, 153)
+COLOR_TEXT = (240, 240, 240)
+COLOR_SHIELD = (0, 153, 255)
 
-        .content { flex: 1; overflow-y: auto; padding: 15px 15px 120px; }
+# الخطوط
+font_sub = pygame.font.SysFont("Courier New", 20, bold=True)
+font_main = pygame.font.SysFont("Courier New", 36, bold=True)
+font_title = pygame.font.SysFont("Courier New", 60, bold=True)
 
-        .glass-card {
-            background: var(--card); border-radius: 20px; padding: 20px; 
-            margin-bottom: 15px; border: 1px solid rgba(255, 255, 255, 0.03);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-        }
+class Player:
+    def __init__(self):
+        self.width = 50
+        self.height = 40
+        self.x = WIDTH // 2 - self.width // 2
+        self.y = HEIGHT - 70
+        self.speed = 6
+        self.max_health = 100
+        self.health = 100
+        self.cooldown = 0
+        self.cooldown_max = 15  # سرعة الإطلاق البدائية
+        self.score = 0
+        self.double_shot = False
+        self.powerup_timer = 0
 
-        /* تنسيق الأذكار كما في الصورة */
-        .section-header { display: flex; align-items: center; gap: 8px; margin: 15px 0 10px; color: var(--gold); font-size: 1.1rem; }
-        .azkar-row { 
-            background: var(--card); margin-bottom: 10px; padding: 22px 15px; 
-            border-radius: 18px; display: flex; align-items: center; justify-content: space-between;
-            border: 1px solid rgba(255,255,255,0.05); cursor: pointer; transition: 0.3s;
-        }
-        .azkar-row:active { transform: scale(0.98); background: #151515; }
-        .azkar-row b { font-size: 1.1rem; color: #fff; }
-        .azkar-row i { color: var(--gold); font-size: 1.2rem; }
+    def move(self, keys):
+        if (keys[pygame.K_LEFT] or keys[pygame.K_a]) and self.x > 0:
+            self.x -= self.speed
+        if (keys[pygame.K_RIGHT] or keys[pygame.K_d]) and self.x < WIDTH - self.width:
+            self.x += self.speed
 
-        /* نافذة العرض الكبيرة (الأذكار والقرآن) */
-        .full-popup { position: fixed; inset: 0; background: #000; z-index: 20000; display: none; flex-direction: column; animation: slideUp 0.4s ease; }
-        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+    def fire(self, keys, player_lasers):
+        if self.cooldown > 0:
+            self.cooldown -= 1
+            
+        if (keys[pygame.K_SPACE] or keys[pygame.K_UP]) and self.cooldown == 0:
+            if self.double_shot:
+                player_lasers.append(Laser(self.x + 5, self.y, -8, COLOR_LASER_PLAYER))
+                player_lasers.append(Laser(self.x + self.width - 10, self.y, -8, COLOR_LASER_PLAYER))
+            else:
+                player_lasers.append(Laser(self.x + self.width // 2 - 2, self.y, -8, COLOR_LASER_PLAYER))
+            self.cooldown = self.cooldown_max
 
-        .popup-header { padding: 20px; background: #0c0c0c; border-bottom: 1px solid var(--gold); display: flex; justify-content: space-between; align-items: center; }
-        .popup-content { flex: 1; overflow-y: auto; padding: 20px; }
-
-        /* مشغل الصوت والقرآن */
-        .quran-text { text-align: center; font-size: 1.8rem; line-height: 2.8; color: #f0f0f0; direction: rtl; }
-        .audio-player { background: #111; padding: 20px; border-radius: 20px; margin-top: 20px; border: 1px solid var(--gold); }
-        .progress-container { width: 100%; height: 6px; background: #333; border-radius: 3px; margin: 15px 0; position: relative; cursor: pointer; }
-        .progress-fill { height: 100%; background: var(--gold); width: 0%; border-radius: 3px; }
-        .audio-controls { display: flex; justify-content: center; gap: 30px; align-items: center; }
-        .audio-controls i { font-size: 2rem; color: var(--gold); }
-
-        /* كروت الأذكار داخل القائمة */
-        .zikr-card { background: #111; padding: 20px; border-radius: 15px; margin-bottom: 15px; border-right: 4px solid var(--gold); position: relative; }
-        .zikr-count { position: absolute; left: 15px; bottom: 10px; background: var(--gold); color: #000; padding: 2px 12px; border-radius: 10px; font-weight: bold; font-size: 0.8rem; }
-
-        /* الملاحة */
-        .nav-bar { position: fixed; bottom: 0; width: 100%; height: 85px; background: #000; display: flex; border-top: 1px solid var(--gold); }
-        .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #555; font-size: 0.75rem; }
-        .nav-item.active { color: var(--gold); }
-        .nav-item i { font-size: 1.6rem; margin-bottom: 5px; }
-
-        .month-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-        .month-box { background: #111; padding: 15px; border-radius: 12px; text-align: center; border: 1px solid #222; font-size: 0.85rem; }
-    </style>
-</head>
-<body>
-
-<div class="beta-banner">التطبيق غير مكتمل هذه نسخة تجريبية</div>
-
-<div class="overlay">
-    <div id="main-popup" class="full-popup">
-        <div class="popup-header">
-            <i class="fa-solid fa-chevron-down" onclick="closePopup()" style="font-size: 1.5rem;"></i>
-            <b id="pop-title" style="color:var(--gold)">العنوان</b>
-            <i class="fa-solid fa-share-nodes" style="color:var(--gold)"></i>
-        </div>
-        <div class="popup-content" id="pop-body">
-            </div>
-        <div id="player-ui" style="display:none; padding:20px;">
-            <div class="audio-player">
-                <div class="progress-container" onclick="seek(event)">
-                    <div class="progress-fill" id="p-fill"></div>
-                </div>
-                <div class="audio-controls">
-                    <i class="fa-solid fa-backward-step"></i>
-                    <i class="fa-solid fa-play" id="play-icon" onclick="toggleAudio()"></i>
-                    <i class="fa-solid fa-forward-step"></i>
-                </div>
-                <div style="display:flex; justify-content:space-between; font-size:0.7rem; margin-top:5px;">
-                    <span id="curr-time">00:00</span>
-                    <span id="dur-time">00:00</span>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="content">
-        <div id="page-home" class="page">
-            <div class="glass-card" style="text-align:center">
-                <div style="font-size: 3.5rem; color: var(--gold); font-weight: 200;" id="clock">00:00</div>
-                <p style="opacity:0.6; font-size: 0.9rem;">الجمعة، 30 يناير 2026</p>
-            </div>
-
-            <div class="section-header">✨ أذكار مختارة</div>
-            <div class="azkar-row" onclick="openAzkar('morning')"><b>أذكار الصباح</b><i class="fa-solid fa-star"></i></div>
-            <div class="azkar-row" onclick="openAzkar('evening')"><b>أذكار المساء</b><i class="fa-solid fa-star"></i></div>
-            <div class="azkar-row" onclick="openAzkar('sleep')"><b>أذكار النوم</b><i class="fa-solid fa-star"></i></div>
-            <div class="azkar-row" onclick="openAzkar('wakeup')"><b>أذكار الاستيقاظ</b><i class="fa-solid fa-star"></i></div>
-
-            <div class="section-header">📜 أحاديث نبوية</div>
-            <div id="hadith-list"></div>
-
-            <div class="section-header">📅 التقويم الهجري</div>
-            <div class="month-grid" id="m-grid"></div>
-        </div>
-
-        <div id="page-quran" class="page" style="display:none">
-            <div class="section-header">📖 سور القرآن الكريم</div>
-            <div id="surah-list"></div>
-        </div>
-    </div>
-
-    <nav class="nav-bar">
-        <div class="nav-item active" onclick="showPage('page-home', this)"><i class="fa-solid fa-house"></i><span>الرئيسية</span></div>
-        <div class="nav-item" onclick="showPage('page-quran', this)"><i class="fa-solid fa-book-quran"></i><span>القرآن</span></div>
-        <div class="nav-item" onclick="openAzkar('tasbih')"><i class="fa-solid fa-dharmachakra"></i><span>تسبيح</span></div>
-    </nav>
-</div>
-
-<script>
-    const audio = new Audio();
-    const azkarData = {
-        morning: [
-            {t: "أصبحنا وأصبح الملك لله والحمد لله", c: 1},
-            {t: "اللهم بك أصبحنا وبك أمسينا وبك نحيا", c: 1},
-            {t: "أعوذ بكلمات الله التامات من شر ما خلق", c: 3},
-            {t: "بسم الله الذي لا يضر مع اسمه شيء", c: 3},
-            {t: "يا حي يا قيوم برحمتك أستغيث", c: 3},
-            {t: "رضيت بالله رباً وبالإسلام ديناً", c: 3},
-            {t: "سبحان الله وبحمده", c: 100}
-        ],
-        evening: [
-            {t: "أمسينا وأمسى الملك لله والحمد لله", c: 1},
-            {t: "اللهم بك أمسينا وبك أصبحنا", c: 1},
-            {t: "اللهم ما أمسى بي من نعمة أو بأحد من خلقك", c: 1},
-            {t: "حسبي الله لا إله إلا هو عليه توكلت", c: 7}
-        ],
-        sleep: [
-            {t: "باسمك ربي وضعت جنبي وبك أرفعه", c: 1},
-            {t: "اللهم قني عذابك يوم تبعث عبادك", c: 3},
-            {t: "اللهم باسمك أموت وأحيا", c: 1}
+    def draw(self, surface):
+        # رسم مركبة فضائية متطورة بالخطوط والأشكال
+        points = [
+            (self.x + self.width // 2, self.y),
+            (self.x, self.y + self.height),
+            (self.x + self.width // 4, self.y + self.height * 0.75),
+            (self.x + self.width * 0.75, self.y + self.height * 0.75),
+            (self.x + self.width, self.y + self.height)
         ]
-    };
+        pygame.draw.polygon(surface, COLOR_PLAYER, points)
+        if self.double_shot:
+            pygame.draw.circle(surface, COLOR_SHIELD, (self.x + self.width // 2, self.y + self.height // 2), 30, 2)
 
-    const surahs = ["الفاتحة","البقرة","آل عمران","النساء","المائدة","الأنعام","الأعراف","الأنفال","التوبة","يونس","هود","يوسف","الرعد","إبراهيم","الحجر","النحل","الإسراء","الكهف","مريم","طه","الأنبياء","الحج","المؤمنون","النور","الفرقان","الشعراء","النمل","القصص","العنكبوت","الروم","لقمان","السجدة","الأحزاب","سبأ","فاطر","يس","الصافات","ص","الزمر","غافر","فصلت","الشورى","الزخرف","الدخان","الجاثية","الأحقاف","محمد","الفتح","الحجرات","ق","الذاريات","الطور","النجم","القمر","الرحمن","الواقعة","الحديد","المجادلة","الحشر","الممتحنة","الصف","الجمعة","المنافقون","التغابن","الطلاق","التحريم","الملك","القلم","الحاقة","المعارج","نوح","الجن","المزمل","المدثر","القيامة","الإنسان","المرسلات","النبأ","النازعات","عبس","التكوير","الانفطار","المطففين","الانشقاق","البروج","الطارق","الأعلى","الغاشية","الفجر","البلد","الشمس","الليل","الضحى","الشرح","التين","العلق","القدر","البينة","الزلزلة","العاديات","القارعة","التكاثر","العصر","الهمزة","الفيل","قريش","الماعون","الكوثر","الكافرون","النصر","المسد","الإخلاص","الفلق","الناس"];
+        # شريط الصحة أسفل المركبة
+        health_bar_width = self.width
+        health_ratio = self.health / self.max_health
+        pygame.draw.rect(surface, (100, 0, 0), (self.x, self.y + self.height + 10, health_bar_width, 5))
+        pygame.draw.rect(surface, (0, 255, 0), (self.x, self.y + self.height + 10, health_bar_width * health_ratio, 5))
 
-    const months = ["محرم","صفر","ربيع الأول","ربيع الآخر","جمادى الأولى","جمادى الآخرة","رجب","شعبان","رمضان","شوال","ذو القعدة","ذو الحجة"];
+class Enemy:
+    def __init__(self, x, y, enemy_type):
+        self.x = x
+        self.y = y
+        self.type = enemy_type
+        if self.type == "fast":
+            self.width, self.height = 30, 25
+            self.color = COLOR_ENEMY_FAST
+            self.speed_x = random.choice([-4, -3, 3, 4])
+            self.speed_y = 0.5
+            self.health = 1
+            self.points = 25
+        else:
+            self.width, self.height = 40, 30
+            self.color = COLOR_ENEMY_BASIC
+            self.speed_x = random.choice([-2, -1, 1, 2])
+            self.speed_y = 0.3
+            self.health = 2
+            self.points = 10
 
-    // بناء قائمة السور
-    const sList = document.getElementById('surah-list');
-    surahs.forEach((s, i) => {
-        sList.innerHTML += `<div class="azkar-row" onclick="playQuran('${(i+1).toString().padStart(3,'0')}', '${s}', ${i+1})"><b>سورة ${s}</b><i class="fa-solid fa-play"></i></div>`;
-    });
-
-    // بناء التقويم
-    const mGrid = document.getElementById('m-grid');
-    months.forEach(m => { mGrid.innerHTML += `<div class="month-box">${m}</div>`; });
-
-    // بناء الأحاديث
-    const hList = document.getElementById('hadith-list');
-    for(let i=1; i<=10; i++) {
-        hList.innerHTML += `<div class="azkar-row"><b>حديث رقم ${i}: الدين النصيحة...</b><i class="fa-solid fa-scroll"></i></div>`;
-    }
-
-    // وظائف الأذكار
-    function openAzkar(type) {
-        const pop = document.getElementById('main-popup');
-        const body = document.getElementById('pop-body');
-        const title = document.getElementById('pop-title');
-        pop.style.display = 'flex';
-        document.getElementById('player-ui').style.display = 'none';
+    def update(self):
+        self.x += self.speed_x
+        self.y += self.speed_y
         
-        if(type === 'tasbih') {
-            title.innerText = "المسبحة الإلكترونية";
-            body.innerHTML = `
-                <div style="text-align:center; padding-top:50px;">
-                    <div id="t-count" style="font-size:8rem; color:var(--gold)">0</div>
-                    <div onclick="doTasbih()" style="width:200px; height:200px; border-radius:50%; border:5px solid var(--gold); margin:40px auto; display:flex; align-items:center; justify-content:center; font-size:2rem; active {transform:scale(0.9)}">اضغط</div>
-                    <button onclick="document.getElementById('t-count').innerText=0" style="background:none; border:1px solid #444; color:#666; padding:10px 30px; border-radius:10px;">تصفير</button>
-                </div>`;
-            return;
-        }
+        # الارتداد عن الجوانب
+        if self.x <= 0 or self.x >= WIDTH - self.width:
+            self.speed_x *= -1
 
-        title.innerText = type === 'morning' ? "أذكار الصباح" : "أذكار المساء";
-        body.innerHTML = "";
-        azkarData[type]?.forEach((z, i) => {
-            body.innerHTML += `
-                <div class="zikr-card" onclick="decrementZikr(this, ${z.c})">
-                    <p>${z.t}</p>
-                    <span class="zikr-count">التكرار: ${z.c}</span>
-                </div>`;
-        });
-    }
+    def draw(self, surface):
+        # شكل العدو الفضائي
+        rect = pygame.Rect(self.x, self.y, self.width, self.height)
+        pygame.draw.rect(surface, self.color, rect, border_radius=5)
+        # رسم أعين الكائن الفضائي
+        pygame.draw.circle(surface, COLOR_BG, (self.x + self.width // 4, self.y + self.height // 3), 4)
+        pygame.draw.circle(surface, COLOR_BG, (self.x + self.width * 0.75, self.y + self.height // 3), 4)
 
-    function decrementZikr(el, max) {
-        let span = el.querySelector('.zikr-count');
-        let current = parseInt(span.innerText.split(': ')[1]);
-        if(current > 0) {
-            current--;
-            span.innerText = `التكرار: ${current}`;
-            if(navigator.vibrate) navigator.vibrate(40);
-            if(current === 0) el.style.opacity = "0.3";
-        }
-    }
+class Laser:
+    def __init__(self, x, y, speed_y, color):
+        self.x = x
+        self.y = y
+        self.width = 4
+        self.height = 15
+        self.speed_y = speed_y
+        self.color = color
 
-    let tasbihCount = 0;
-    function doTasbih() {
-        tasbihCount++;
-        document.getElementById('t-count').innerText = tasbihCount;
-        if(navigator.vibrate) navigator.vibrate(50);
-    }
+    def update(self):
+        self.y += self.speed_y
 
-    // وظائف القرآن والصوت
-    async function playQuran(id, name, n) {
-        document.getElementById('main-popup').style.display = 'flex';
-        document.getElementById('pop-title').innerText = "سورة " + name;
-        document.getElementById('player-ui').style.display = 'block';
-        const body = document.getElementById('pop-body');
-        body.innerHTML = `<div class="quran-text">جاري تحميل آيات سورة ${name}...</div>`;
+    def draw(self, surface):
+        pygame.draw.rect(surface, self.color, (self.x, self.y, self.width, self.height))
+
+class PowerUp:
+    def __init__(self, x, y, pu_type):
+        self.x = x
+        self.y = y
+        self.type = pu_type # "heal" أو "double"
+        self.size = 15
+        self.color = (0, 255, 0) if pu_type == "heal" else COLOR_SHIELD
+
+    def update(self):
+        self.y += 3
+
+    def draw(self, surface):
+        pygame.draw.circle(surface, self.color, (self.x, self.y), self.size)
+
+
+class Particle:
+    """تأثيرات الانفجارات البصرية لقوة الـ Repo البصرية"""
+    def __init__(self, x, y, color):
+        self.x = x
+        self.y = y
+        self.color = color
+        self.vx = random.uniform(-3, 3)
+        self.vy = random.uniform(-3, 3)
+        self.lifetime = random.randint(10, 25)
+
+    def update(self):
+        self.x += self.vx
+        self.y += self.vy
+        self.lifetime -= 1
+
+    def draw(self, surface):
+        if self.lifetime > 0:
+            pygame.draw.circle(surface, self.color, (int(self.x), int(self.y)), 3)
+
+# مصفوفة النجوم في الخلفية (Parallax Starfield)
+stars = [[random.randint(0, WIDTH), random.randint(0, HEIGHT), random.uniform(1, 3)] for _ in range(50)]
+
+def main():
+    player = Player()
+    enemies = []
+    player_lasers = []
+    enemy_lasers = []
+    powerups = []
+    particles = []
+    
+    wave = 0
+    game_state = "MENU" # MENU, PLAYING, GAME_OVER
+
+    while True:
+        keys = pygame.key.get_pressed()
         
-        audio.src = `https://server8.mp3quran.net/ahmad_huth/${id}.mp3`;
-        audio.play();
-        document.getElementById('play-icon').className = "fa-solid fa-pause";
+        # إدارة الأحداث
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.KEYDOWN:
+                if game_state == "MENU" and event.key == pygame.K_SPACE:
+                    game_state = "PLAYING"
+                    player.reset_game() if hasattr(player, 'reset_game') else None
+                elif game_state == "GAME_OVER" and event.key == pygame.K_SPACE:
+                    player = Player()
+                    enemies, player_lasers, enemy_lasers, powerups, particles = [], [], [], [], []
+                    wave = 0
+                    game_state = "PLAYING"
 
-        try {
-            const r = await fetch(`https://api.alquran.cloud/v1/surah/${n}`);
-            const d = await r.json();
-            body.innerHTML = `<div class="quran-text">${d.data.ayahs.map(a => a.text).join(" ۞ ")}</div>`;
-        } catch(e) { body.innerHTML = "خطأ في تحميل النص."; }
-    }
+        # --- حالة القائمة الرئيسية (MENU) ---
+        if game_state == "MENU":
+            screen.fill(COLOR_BG)
+            title = font_title.render("SPACE INVADERS", True, COLOR_PLAYER)
+            sub = font_main.render("Press [SPACE] to Start", True, COLOR_TEXT)
+            github_tag = font_sub.render("GitHub Premium Edition", True, (100, 100, 150))
+            screen.blit(title, (WIDTH//2 - title.get_width()//2, HEIGHT//3))
+            screen.blit(sub, (WIDTH//2 - sub.get_width()//2, HEIGHT//2))
+            screen.blit(github_tag, (WIDTH//2 - github_tag.get_width()//2, HEIGHT - 50))
+            pygame.display.flip()
+            clock.tick(60)
+            continue
 
-    function toggleAudio() {
-        if(audio.paused) { audio.play(); document.getElementById('play-icon').className = "fa-solid fa-pause"; }
-        else { audio.pause(); document.getElementById('play-icon').className = "fa-solid fa-play"; }
-    }
+        # --- حالة الخسارة (GAME OVER) ---
+        if game_state == "GAME_OVER":
+            screen.fill(COLOR_BG)
+            title = font_title.render("GAME OVER", True, COLOR_ENEMY_BASIC)
+            sub = font_main.render(f"Final Score: {player.score}", True, COLOR_TEXT)
+            restart = font_sub.render("Press [SPACE] to Try Again", True, COLOR_PLAYER)
+            screen.blit(title, (WIDTH//2 - title.get_width()//2, HEIGHT//3))
+            screen.blit(sub, (WIDTH//2 - sub.get_width()//2, HEIGHT//2))
+            screen.blit(restart, (WIDTH//2 - restart.get_width()//2, HEIGHT * 0.65))
+            pygame.display.flip()
+            clock.tick(60)
+            continue
 
-    audio.ontimeupdate = () => {
-        const p = (audio.currentTime / audio.duration) * 100;
-        document.getElementById('p-fill').style.width = p + "%";
-        document.getElementById('curr-time').innerText = formatTime(audio.currentTime);
-        document.getElementById('dur-time').innerText = formatTime(audio.duration);
-    };
+        # --- حالة اللعب الفعلي (PLAYING) ---
+        # 1. تحديث النجوم بالخلفية
+        for star in stars:
+            star[1] += star[2]
+            if star[1] > HEIGHT:
+                star[1] = 0
+                star[0] = random.randint(0, WIDTH)
 
-    function formatTime(sec) {
-        if(isNaN(sec)) return "00:00";
-        let m = Math.floor(sec / 60);
-        let s = Math.floor(sec % 60);
-        return `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
-    }
+        # 2. حركة اللاعب والإطلاق
+        player.move(keys)
+        player.fire(keys, player_lasers)
 
-    function seek(e) {
-        const rect = e.target.getBoundingClientRect();
-        const p = (e.clientX - rect.left) / rect.width;
-        audio.currentTime = p * audio.duration;
-    }
+        if player.double_shot:
+            player.powerup_timer -= 1
+            if player.powerup_timer <= 0:
+                player.double_shot = False
 
-    function closePopup() { 
-        document.getElementById('main-popup').style.display = 'none'; 
-        audio.pause();
-    }
+        # 3. توليد موجات الأعداء (Wave System)
+        if len(enemies) == 0:
+            wave += 1
+            for row in range(3):
+                for col in range(8):
+                    e_type = "fast" if row == 0 and wave > 1 else "basic"
+                    enemies.append(Enemy(col * 80 + 100, row * 50 + 60, e_type))
 
-    function showPage(id, el) {
-        document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
-        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-        document.getElementById(id).style.display = 'block';
-        el.classList.add('active');
-    }
+        # 4. تحديث الأعداء وإطلاق ليزر الأعداء عشوائياً
+        for enemy in enemies[:]:
+            enemy.update()
+            # فرصة عشوائية لكل عدو ليطلق النار
+            if random.randint(1, 1500) == 7:
+                enemy_lasers.append(Laser(enemy.x + enemy.width//2, enemy.y + enemy.height, 4, COLOR_LASER_ENEMY))
+            
+            # إذا وصل العدو لأسفل الشاشة
+            if enemy.y + enemy.height >= player.y:
+                game_state = "GAME_OVER"
 
-    setInterval(() => {
-        document.getElementById('clock').innerText = new Date().toLocaleTimeString('ar-EG', {hour:'2-digit', minute:'2-digit'});
-    }, 1000);
-</script>
-</body>
-</html>
+        # 5. تحديث المقذوفات والمؤثرات
+        for laser in player_lasers[:]:
+            laser.update()
+            if laser.y < 0: player_lasers.remove(laser)
+
+        for laser in enemy_lasers[:]:
+            laser.update()
+            if laser.y > HEIGHT: enemy_lasers.remove(laser)
+
+        for pu in powerups[:]:
+            pu.update()
+            if pu.y > HEIGHT: powerups.remove(pu)
+
+        for p in particles[:]:
+            p.update()
+            if p.lifetime <= 0: particles.remove(p)
+
+        # 6. معالجة الاصطدامات (Collisions)
+        # ليزر اللاعب يصيب الأعداء
+        for laser in player_lasers[:]:
+            for enemy in enemies[:]:
+                if (laser.x > enemy.x and laser.x < enemy.x + enemy.width and
+                    laser.y > enemy.y and laser.y < enemy.y + enemy.height):
+                    
+                    if laser in player_lasers: player_lasers.remove(laser)
+                    enemy.health -= 1
+                    
+                    # توليد جزيئات انفجار
+                    for _ in range(10):
+                        particles.append(Particle(enemy.x + enemy.width//2, enemy.y + enemy.height//2, enemy.color))
+                    
+                    if enemy.health <= 0:
+                        player.score += enemy.points
+                        # فرصة إسقاط هدايا الدعم (Power-ups)
+                        if random.random() < 0.2:
+                            powerups.append(PowerUp(enemy.x + enemy.width//2, enemy.y, random.choice(["heal", "double"])))
+                        enemies.remove(enemy)
+
+        # ليزر الأعداء يصيب اللاعب
+        for laser in enemy_lasers[:]:
+            if (laser.x > player.x and laser.x < player.x + player.width and
+                laser.y > player.y and laser.y < player.y + player.height):
+                enemy_lasers.remove(laser)
+                player.health -= 15
+                for _ in range(5):
+                    particles.append(Particle(laser.x, laser.y, COLOR_ENEMY_BASIC))
+                if player.health <= 0:
+                    game_state = "GAME_OVER"
+
+        # اللاعب يلتقط هدايا الدعم
+        for pu in powerups[:]:
+            if (pu.x > player.x and pu.x < player.x + player.width and
+                pu.y > player.y and pu.y < player.y + player.height):
+                if pu.type == "heal":
+                    player.health = min(player.max_health, player.health + 30)
+                elif pu.type == "double":
+                    player.double_shot = True
+                    player.powerup_timer = 400 # مدة تفعيل السلاح المزدوج
+                powerups.remove(pu)
+
+        # --- الرسم على الشاشة ---
+        screen.fill(COLOR_BG)
+
+        # رسم خلفية النجوم متحركة
+        for star in stars:
+            pygame.draw.circle(screen, (200, 200, 250), (int(star[0]), int(star[1])), 1)
+
+        player.draw(screen)
+        for enemy in enemies: enemy.draw(screen)
+        for laser in player_lasers: laser.draw(screen)
+        for laser in enemy_lasers: laser.draw(screen)
+        for pu in powerups: pu.draw(screen)
+        for p in particles: p.draw(screen)
+
+        # لوحة العرض العلوية (HUD)
+        ui_score = font_sub.render(f"SCORE: {player.score}", True, COLOR_TEXT)
+        ui_wave = font_sub.render(f"WAVE: {wave}", True, COLOR_PLAYER)
+        screen.blit(ui_score, (20, 20))
+        screen.blit(ui_wave, (WIDTH - ui_wave.get_width() - 20, 20))
+
+        pygame.display.flip()
+        clock.tick(60)
+
+if __name__ == "__main__":
+    main()
+
